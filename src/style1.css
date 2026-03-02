@@ -1,0 +1,187 @@
+/* ============================= */
+/* BASE */
+/* ============================= */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: #f4f6f9;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px 20px;
+}
+
+/* ============================= */
+/* HEADER EMPRESARIAL */
+/* ============================= */
+
+.enterprise-header {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.enterprise-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.enterprise-user-info {
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.role-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role-badge.admin {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.role-badge.user {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* ============================= */
+/* NAV */
+/* ============================= */
+
+.enterprise-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.enterprise-nav a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #374151;
+  transition: 0.2s;
+}
+
+.enterprise-nav a:hover {
+  color: #007bff;
+}
+
+/* ============================= */
+/* CARDS */
+/* ============================= */
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+}
+
+/* ============================= */
+/* BOTONES */
+/* ============================= */
+
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-success {
+  background-color: #16a34a;
+  color: white;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: white;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+/* ============================= */
+/* TABLAS */
+/* ============================= */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th {
+  background-color: #f9fafb;
+  padding: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+}
+
+.table td {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.table tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* ============================= */
+/* INPUTS */
+/* ============================= */
+
+input, select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  width: 100%;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .enterprise-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .enterprise-nav {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
