@@ -4,11 +4,16 @@
 :root {
   --bg-body: #f4f6f9;
   --bg-card: #ffffff;
+  --bg-header-dark: #1e293b; /* NUEVO: Fondo oscuro premium para el Header */
+  
   --text-main: #1f2937;
   --text-muted: #6b7280;
+  --text-header: #ffffff;    /* NUEVO: Texto claro para el header oscuro */
   
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
+  --primary-bright: #60a5fa; /* NUEVO: Azul brillante para active en fondo oscuro */
+  --primary-light: #eff6ff; 
   --success: #16a34a;
   --danger: #dc2626;
   --warning: #f59e0b;
@@ -77,6 +82,20 @@ body {
 .btn-success { background-color: var(--success); color: white; }
 .btn-danger { background-color: var(--danger); color: white; }
 
+/* Botón fantasma/bordeado para el "Salir" del Header OSCURO */
+.btn-outline-danger {
+  background-color: transparent;
+  color: var(--text-header); /* Blanco por defecto */
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: white;
+  opacity: 1;
+}
+
 /* =========================================
    3. FORMULARIOS (Inputs y Selects)
    ========================================= */
@@ -97,59 +116,139 @@ input:focus, select:focus {
 }
 
 /* =========================================
-   4. HEADER (Navegación Empresarial)
+   4. HEADER PREMIUM OSCURO (Contrasta con el resto)
    ========================================= */
 .header {
-  background: var(--bg-card);
-  padding: 20px 25px;
-  border-radius: 12px;
+  background: var(--bg-header-dark); /* NUEVO: Fondo oscuro */
+  padding: 15px 25px;
+  border-radius: 16px;
   box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  border: 1px solid rgba(255,255,255,0.05); /* Borde suave */
 }
 
-.nav-links {
+.header-brand {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
-.nav-links a {
-  text-decoration: none;
-  font-weight: 600;
-  color: var(--text-muted);
-  transition: color 0.2s;
+.logo-icon {
+  font-size: 2rem;
+  background: rgba(255,255,255,0.05); /* Fondo suave */
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
 }
 
-.nav-links a:hover {
-  color: var(--primary);
-}
-
-/* =========================================
-   4.1 TEXTOS DEL HEADER
-   ========================================= */
 .header-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .header-title {
   margin: 0;
-  font-size: 1.4rem;
-  color: var(--text-main);
-}
-
-.header-subtitle {
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-header); /* NUEVO: Texto blanco */
+  letter-spacing: -0.5px;
 }
 
 /* =========================================
-   5. PANTALLA DE LOGIN (Clases faltantes)
+   4.1 PERFIL DE USUARIO EN EL HEADER OSCURO
    ========================================= */
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7); /* Texto blanco tenue */
+}
+
+.avatar {
+  background-color: var(--text-header);
+  color: var(--bg-header-dark); /* Contraste inverso */
+  font-weight: bold;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.7rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-header); /* NUEVO: Texto blanco */
+}
+
+.role-tag {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Colores de roles adaptados a fondo oscuro */
+.role-admin {
+  background-color: #fef3c7; 
+  color: #b45309; 
+}
+
+.role-user {
+  background-color: #e0e7ff; 
+  color: #4338ca;
+}
+
+/* =========================================
+   4.2 NAVEGACIÓN TIPO PÍLDORAS EN FONDO OSCURO
+   ========================================= */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-item {
+  text-decoration: none;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7); /* Blanco tenue */
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.nav-item:hover {
+  background-color: rgba(255,255,255,0.05); /* Hover suave */
+  color: var(--text-header);
+}
+
+.nav-item.active {
+  background-color: var(--primary-bright); /* Azul brillante para destacar */
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* =========================================
+   5. CONTENIDO PRINCIPAL (Mantiene fondo claro)
+   ========================================= */
+.main-content {
+  background-color: var(--bg-body);
+}
+
+/* ... (El resto del CSS se mantiene igual) ... */
 .login-container {
   display: flex;
   justify-content: center;
@@ -233,14 +332,29 @@ input:focus, select:focus {
   /* Apilar el header en móvil */
   .header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .header-brand {
+    justify-content: center;
+    text-align: center;
   }
 
   .nav-links {
     flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
     gap: 10px;
+  }
+  
+  .nav-item {
+    flex: 1 1 calc(50% - 10px); /* Dos botones por fila en móvil */
+    text-align: center;
+  }
+
+  .nav-links .btn {
+    width: 100%; /* Botón de salir ocupa toda la fila en móvil */
   }
 
   /* Truco de Tablas Responsivas (Modo Tarjeta) */
@@ -346,7 +460,7 @@ input:focus, select:focus {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  flex-wrap: wrap; /* Si la pantalla es pequeña, se apilan */
+  flex-wrap: wrap;
   gap: 15px;
 }
 
@@ -381,30 +495,66 @@ input:focus, select:focus {
   width: 130px;
 }
 
-/* Las opciones dentro del select siempre deben verse normales */
 .select-status option {
   background-color: var(--bg-card);
   color: var(--text-main);
   font-weight: normal;
 }
 
-/* 🎨 Clases de colores dinámicos */
-.status-aprobado {
-  background-color: var(--success);
-  color: white;
-}
-
-.status-rechazado {
-  background-color: var(--danger);
-  color: white;
-}
-
-.status-pendiente {
-  background-color: var(--warning);
-  color: #854d0e; /* Texto marrón oscuro para contrastar con el amarillo */
-}
+/* Clases de colores dinámicos */
+.status-aprobado { background-color: var(--success); color: white; }
+.status-rechazado { background-color: var(--danger); color: white; }
+.status-pendiente { background-color: var(--warning); color: #854d0e; }
 
 /* Utilidad para centrar texto */
-.text-center {
-  text-align: center;
+.text-center { text-align: center; }
+
+/* =========================================
+   10. MODAL DE CONFIRMACIÓN
+   ========================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
 }
+
+.modal-content {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-content h3 { margin-top: 0; color: var(--text-main); }
+.modal-content p { color: var(--text-muted); margin-bottom: 25px; }
+.modal-actions { display: flex; justify-content: center; gap: 15px; }
+
+/* =========================================
+   11. NOTIFICACIONES (TOAST)
+   ========================================= */
+.toast-container {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  z-index: 1050;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toast-success { background-color: var(--success); }
+.toast-error { background-color: var(--danger); }
+
+/* Animaciones */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }

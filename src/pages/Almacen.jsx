@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getAlmacen, createAlmacenItem, deleteAlmacenItem } from '../services/api';
+import ConfirmModal from '../components/ConfirmModal';
 
 function Almacen() {
   const [materialesBase, setMaterialesBase] = useState([]);
   const [nuevoNombre, setNuevoNombre] = useState('');
+
+  // Estados para Modal y Toast
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [idAEliminar, setIdAEliminar] = useState(null);
+  const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: '' });
 
   useEffect(() => {
     cargarAlmacen();
@@ -18,11 +24,18 @@ function Almacen() {
     }
   };
 
+  const mostrarNotificacion = (mensaje, tipo) => {
+    setToast({ visible: true, mensaje, tipo });
+    setTimeout(() => {
+      setToast({ visible: false, mensaje: '', tipo: '' });
+    }, 3000);
+  };
+
   const agregarMaterial = async (e) => {
     e.preventDefault();
 
     if (!nuevoNombre.trim()) {
-      alert("El nombre no puede estar vacío");
+      mostrarNotificacion("El nombre no puede estar vacío", "error");
       return;
     }
 
@@ -30,30 +43,50 @@ function Almacen() {
       const nuevo = await createAlmacenItem({ name: nuevoNombre });
       setMaterialesBase(prev => [...prev, nuevo]);
       setNuevoNombre('');
+      mostrarNotificacion("Material agregado al catálogo", "success");
     } catch (error) {
-      alert("Error al guardar en el almacén");
+      mostrarNotificacion("Error al guardar en el almacén", "error");
     }
   };
 
-  const eliminarMaterial = async (id) => {
-    if (!window.confirm("¿Estás seguro de eliminar este material?")) return;
+  const solicitarEliminar = (id) => {
+    setIdAEliminar(id);
+    setModalAbierto(true);
+  };
 
+  const confirmarEliminacion = async () => {
     try {
-      await deleteAlmacenItem(id);
-      setMaterialesBase(prev => prev.filter(mat => mat.id !== id));
+      await deleteAlmacenItem(idAEliminar);
+      setMaterialesBase(prev => prev.filter(mat => mat.id !== idAEliminar));
+      setModalAbierto(false);
+      setIdAEliminar(null);
+      mostrarNotificacion("Material eliminado del catálogo", "success");
     } catch (error) {
-      alert("Error al eliminar");
+      mostrarNotificacion("Error al eliminar el material", "error");
+      setModalAbierto(false);
     }
   };
 
   return (
     <div className="card">
+      <ConfirmModal 
+        isOpen={modalAbierto} 
+        onClose={() => setModalAbierto(false)} 
+        onConfirm={confirmarEliminacion}
+        mensaje="¿Estás seguro de eliminar este material base del catálogo?"
+      />
+
+      {toast.visible && (
+        <div className={`toast-container toast-${toast.tipo}`}>
+          {toast.mensaje}
+        </div>
+      )}
+
       <h2>Catálogo de Almacén</h2>
       <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>
         Agrega los materiales base para que luego estén disponibles en los requerimientos.
       </p>
 
-      {/* Formulario usando la clase reutilizable form-row y search-container para los márgenes */}
       <div className="search-container">
         <form onSubmit={agregarMaterial} className="form-row">
           <input
@@ -87,7 +120,7 @@ function Almacen() {
                 <td data-label="Acciones">
                   <button
                     className="btn btn-danger"
-                    onClick={() => eliminarMaterial(mat.id)}
+                    onClick={() => solicitarEliminar(mat.id)}
                   >
                     🗑️
                   </button>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ListaMateriales from './pages/ListaMateriales';
 import FormularioMaterial from './pages/FormularioMaterial';
@@ -30,50 +30,78 @@ function MainApp() {
     return <Login onLogin={manejarLogin} />;
   }
 
+  // Obtenemos la inicial del usuario para el avatar visual
+  const inicialUsuario = usuarioActual?.name ? usuarioActual.name.charAt(0).toUpperCase() : 'U';
+
   return (
     <div className="container">
 
-      {/* HEADER PROFESIONAL (Sin estilos en línea) */}
+      {/* HEADER PREMIUM OSCURO */}
       <header className="header">
-        <div className="header-info">
-          <h1 className="header-title">
-            Sistema de Gestión de Inventario
-          </h1>
-          <small className="header-subtitle">
-            Usuario: <strong>{usuarioActual.name}</strong> | 
-            Rol: {usuarioActual.isAdmin ? ' Administrador' : ' Encargado'}
-          </small>
+        <div className="header-brand">
+          <div className="logo-icon">📦</div>
+          <div className="header-info">
+            <h1 className="header-title">
+              Gestión de Inventario
+            </h1>
+            <div className="user-badge">
+              <span className="avatar">{inicialUsuario}</span>
+              <span className="user-name">{usuarioActual.name}</span>
+              <span className={`role-tag ${usuarioActual.isAdmin ? 'role-admin' : 'role-user'}`}>
+                {usuarioActual.isAdmin ? 'Admin' : 'Encargado'}
+              </span>
+            </div>
+          </div>
         </div>
 
         <nav className="nav-links">
-          <Link to="/">Requerimientos</Link>
+          {/* NavLink nos permite aplicar la clase 'active' automáticamente */}
+          <NavLink 
+            to="/" 
+            className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+          >
+            Requerimientos
+          </NavLink>
           
           {!usuarioActual.isAdmin && (
-            <Link to="/nuevo">Pedir Material</Link>
+            <NavLink 
+              to="/nuevo" 
+              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+            >
+              Pedir Material
+            </NavLink>
           )}
 
           {usuarioActual.isAdmin && (
-            <Link to="/almacen">Catálogo Almacén</Link>
+            <NavLink 
+              to="/almacen" 
+              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+            >
+              Catálogo
+            </NavLink>
           )}
 
-          <button className="btn btn-danger" onClick={manejarLogout}>
+          {/* Botón Salir adaptado al fondo oscuro */}
+          <button className="btn btn-outline-danger" onClick={manejarLogout}>
             Salir
           </button>
         </nav>
       </header>
 
-      {/* CONTENIDO PRINCIPAL */}
-      <Routes>
-        <Route path="/" element={<ListaMateriales usuarioActual={usuarioActual} />} />
+      {/* CONTENIDO PRINCIPAL (Con fondo claro) */}
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<ListaMateriales usuarioActual={usuarioActual} />} />
 
-        {!usuarioActual.isAdmin && (
-          <Route path="/nuevo" element={<FormularioMaterial usuarioActual={usuarioActual} />} />
-        )}
+          {!usuarioActual.isAdmin && (
+            <Route path="/nuevo" element={<FormularioMaterial usuarioActual={usuarioActual} />} />
+          )}
 
-        {usuarioActual.isAdmin && (
-          <Route path="/almacen" element={<Almacen />} />
-        )}
-      </Routes>
+          {usuarioActual.isAdmin && (
+            <Route path="/almacen" element={<Almacen />} />
+          )}
+        </Routes>
+      </main>
 
     </div>
   );

@@ -2,10 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getMateriales, deleteMaterial, updateEstadoMaterial } from '../services/api';
 import * as XLSX from 'xlsx';
+import ConfirmModal from '../components/ConfirmModal';
 
 function ListaMateriales({ usuarioActual = {} }) {
   const [materiales, setMateriales] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  
+  // Estados para el Modal de Confirmación
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [idAEliminar, setIdAEliminar] = useState(null);
 
   useEffect(() => {
     cargarMateriales();
@@ -21,13 +26,19 @@ function ListaMateriales({ usuarioActual = {} }) {
     }
   };
 
-  const eliminarMaterial = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este material?")) return;
+  const solicitarEliminar = (id) => {
+    setIdAEliminar(id);
+    setModalAbierto(true);
+  };
+
+  const confirmarEliminacion = async () => {
     try {
-      await deleteMaterial(id);
+      await deleteMaterial(idAEliminar);
       await cargarMateriales();
+      setModalAbierto(false);
+      setIdAEliminar(null);
     } catch (error) {
-      alert("Error al eliminar material");
+      console.error("Error al eliminar material", error);
     }
   };
 
@@ -36,7 +47,7 @@ function ListaMateriales({ usuarioActual = {} }) {
       await updateEstadoMaterial(id, nuevoEstado);
       await cargarMateriales();
     } catch (error) {
-      alert("Error al actualizar el estado");
+      console.error("Error al actualizar el estado", error);
     }
   };
 
@@ -50,7 +61,7 @@ function ListaMateriales({ usuarioActual = {} }) {
 
   if (busqueda.trim() !== "") {
     const textoMinusculas = busqueda.toLowerCase();
-    materialesVisibles = materialesVisibles.filter(mat => 
+    materialesVisibles = materialesVisibles.filter(mat =>
       (mat.trabajador && mat.trabajador.toLowerCase().includes(textoMinusculas)) ||
       (mat.name && mat.name.toLowerCase().includes(textoMinusculas))
     );
@@ -74,8 +85,6 @@ function ListaMateriales({ usuarioActual = {} }) {
     XLSX.writeFile(libro, "Lista_Requerimientos_Obras.xlsx");
   };
 
-  // ¡AQUÍ ESTÁ LA NUEVA FUNCIÓN! 
-  // Devuelve el nombre de la clase CSS en lugar del código de color.
   const getStatusClass = (estado) => {
     if (estado === "Aprobado") return "status-aprobado";
     if (estado === "Rechazado") return "status-rechazado";
@@ -84,6 +93,13 @@ function ListaMateriales({ usuarioActual = {} }) {
 
   return (
     <div className="card">
+      <ConfirmModal 
+        isOpen={modalAbierto} 
+        onClose={() => setModalAbierto(false)} 
+        onConfirm={confirmarEliminacion}
+        mensaje="¿Estás seguro de que deseas eliminar este requerimiento? Esta acción no se puede deshacer."
+      />
+
       <div className="list-header">
         <h2 style={{ margin: 0 }}>{isAdmin ? "Todos los Requerimientos" : "Mis Requerimientos"}</h2>
 
@@ -103,8 +119,8 @@ function ListaMateriales({ usuarioActual = {} }) {
       </div>
 
       <div className="search-container">
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder={isAdmin ? "🔍 Buscar por trabajador o material..." : "🔍 Buscar material..."}
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
@@ -137,10 +153,9 @@ function ListaMateriales({ usuarioActual = {} }) {
                 
                 <td data-label="Estado">
                   {isAdmin ? (
-                    <select 
-                      value={mat.estado || "Pendiente"} 
+                    <select
+                      value={mat.estado || "Pendiente"}
                       onChange={(e) => cambiarEstado(mat.id, e.target.value)}
-                      /* Usamos template literals para combinar la clase base y la clase de color */
                       className={`select-status ${getStatusClass(mat.estado || "Pendiente")}`}
                     >
                       <option value="Pendiente">Pendiente ⏳</option>
@@ -148,7 +163,6 @@ function ListaMateriales({ usuarioActual = {} }) {
                       <option value="Rechazado">Rechazado ❌</option>
                     </select>
                   ) : (
-                    /* Lo mismo para el usuario, pero con la clase 'badge' */
                     <span className={`badge ${getStatusClass(mat.estado || "Pendiente")}`}>
                       {mat.estado || "Pendiente"}
                     </span>
@@ -159,7 +173,7 @@ function ListaMateriales({ usuarioActual = {} }) {
                 {isAdmin && <td data-label="Especialidad">{mat.especialidad || mat.Especialidad || "⚠️ Vacío"}</td>}
                 
                 <td data-label="Acciones">
-                  <button className="btn btn-danger" onClick={() => eliminarMaterial(mat.id)}>
+                  <button className="btn btn-danger" onClick={() => solicitarEliminar(mat.id)}>
                     🗑️ Eliminar
                   </button>
                 </td>

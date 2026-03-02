@@ -3,8 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { getAlmacen, createMaterial } from '../services/api';
 
 function FormularioMaterial({ usuarioActual }) {
-  const [almacen, setAlmacen] = useState([]); 
+  const [almacen, setAlmacen] = useState([]);
   const navigate = useNavigate();
+
+  // Estado para el Toast (Notificación)
+  const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: '' });
 
   const [formData, setFormData] = useState({
     name: '', brand: '', quantity: '', unit: 'unidades'
@@ -24,6 +27,13 @@ function FormularioMaterial({ usuarioActual }) {
     });
   };
 
+  const mostrarNotificacion = (mensaje, tipo) => {
+    setToast({ visible: true, mensaje, tipo });
+    setTimeout(() => {
+      setToast({ visible: false, mensaje: '', tipo: '' });
+    }, 3000);
+  };
+
   const handleSubmit = async (e) => {
       e.preventDefault();
 
@@ -34,15 +44,25 @@ function FormularioMaterial({ usuarioActual }) {
 
       try {
         await createMaterial(datosParaEnviar);
-        alert('¡Requerimiento agregado con éxito!');
-        navigate('/');
+        mostrarNotificacion('¡Requerimiento agregado con éxito! 🚀', 'success');
+        
+        // Retrasamos la navegación 1.5s para que vea el mensaje
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
       } catch (error) {
-        alert('Hubo un error al agregar.');
+        mostrarNotificacion('Hubo un error al agregar el requerimiento.', 'error');
       }
   };
 
   return (
     <div className="card">
+      {toast.visible && (
+        <div className={`toast-container toast-${toast.tipo}`}>
+          {toast.mensaje}
+        </div>
+      )}
+
       <div className="form-header">
         <h2>Agregar Nuevo Requerimiento</h2>
         <Link to="/">⬅ Volver a la lista</Link>
@@ -50,19 +70,18 @@ function FormularioMaterial({ usuarioActual }) {
 
       <form onSubmit={handleSubmit} className="form-layout">
         
-        {/* Visualización del responsable */}
         <div className="info-box">
           👤 <strong>Responsable:</strong> {usuarioActual.name}
         </div>
 
-        <input 
-          type="text" 
-          name="name" 
-          list="lista-almacen" 
-          placeholder="Escribe para buscar o selecciona un material..." 
-          value={formData.name} 
-          onChange={handleChange} 
-          required 
+        <input
+          type="text"
+          name="name"
+          list="lista-almacen"
+          placeholder="Escribe para buscar o selecciona un material..."
+          value={formData.name}
+          onChange={handleChange}
+          required
         />
         
         <datalist id="lista-almacen">
@@ -71,29 +90,28 @@ function FormularioMaterial({ usuarioActual }) {
           ))}
         </datalist>
 
-        <input 
-          type="text" 
-          name="brand" 
-          placeholder="Marca (ej. Sol)" 
-          value={formData.brand} 
-          onChange={handleChange} 
-          required 
+        <input
+          type="text"
+          name="brand"
+          placeholder="Marca (ej. Sol)"
+          value={formData.brand}
+          onChange={handleChange}
+          required
         />
         
-        {/* Fila para Cantidad y Unidad */}
         <div className="form-row">
-          <input 
-            type="number" 
-            name="quantity" 
-            step="0.01" 
-            placeholder="Cantidad" 
-            value={formData.quantity} 
-            onChange={handleChange} 
-            required 
+          <input
+            type="number"
+            name="quantity"
+            step="0.01"
+            placeholder="Cantidad"
+            value={formData.quantity}
+            onChange={handleChange}
+            required
           />
-          <select 
-            name="unit" 
-            value={formData.unit} 
+          <select
+            name="unit"
+            value={formData.unit}
             onChange={handleChange}
           >
             <option value="unidades">Unidades</option>
@@ -103,7 +121,6 @@ function FormularioMaterial({ usuarioActual }) {
           </select>
         </div>
 
-        {/* Botón usando las clases de nuestro sistema de diseño */}
         <button type="submit" className="btn btn-primary" style={{ marginTop: '10px' }}>
           Guardar Requerimiento
         </button>
