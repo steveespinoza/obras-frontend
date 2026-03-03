@@ -10,6 +10,9 @@ function Almacen() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
   const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: '' });
+  
+  // NUEVO: Estado de carga para el botón de agregar
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     cargarAlmacen();
@@ -39,6 +42,10 @@ function Almacen() {
       return;
     }
 
+    if (loading) return; // Protección contra doble click rápido
+
+    setLoading(true); // Bloqueamos el botón
+
     try {
       const nuevo = await createAlmacenItem({ name: nuevoNombre });
       setMaterialesBase(prev => [...prev, nuevo]);
@@ -46,6 +53,8 @@ function Almacen() {
       mostrarNotificacion("Material agregado al catálogo", "success");
     } catch (error) {
       mostrarNotificacion("Error al guardar en el almacén", "error");
+    } finally {
+      setLoading(false); // Siempre desbloqueamos el botón al terminar, sea éxito o error
     }
   };
 
@@ -69,9 +78,9 @@ function Almacen() {
 
   return (
     <div className="card">
-      <ConfirmModal 
-        isOpen={modalAbierto} 
-        onClose={() => setModalAbierto(false)} 
+      <ConfirmModal
+        isOpen={modalAbierto}
+        onClose={() => setModalAbierto(false)}
         onConfirm={confirmarEliminacion}
         mensaje="¿Estás seguro de eliminar este material base del catálogo?"
       />
@@ -97,8 +106,9 @@ function Almacen() {
             required
           />
 
-          <button type="submit" className="btn btn-success">
-            + Agregar
+          {/* MODIFICADO: Aplicamos el disabled y cambiamos el texto dinámicamente */}
+          <button type="submit" className="btn btn-success" disabled={loading}>
+            {loading ? 'Agregando...' : '+ Agregar'}
           </button>
         </form>
       </div>

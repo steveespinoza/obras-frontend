@@ -1,24 +1,40 @@
 // Usamos variables de entorno para producción, o localhost para desarrollo
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5035";
-// =========================================
-// 🔐 FUNCIÓN AUXILIAR DE SEGURIDAD
-// =========================================
-// Esta función revisa si hay un usuario logueado y saca su token.
+
 const getAuthHeaders = () => {
   const headers = { "Content-Type": "application/json" };
   const usuarioGuardado = localStorage.getItem("usuarioObras");
   
   if (usuarioGuardado) {
     const usuario = JSON.parse(usuarioGuardado);
-    // .NET Minimal APIs suele convertir la primera letra a minúscula (camelCase)
-    const token = usuario.token || usuario.Token; 
-    
+    const token = usuario.token || usuario.Token;
     if (token) {
-      // Aquí "adjuntamos" el pase VIP
       headers["Authorization"] = `Bearer ${token}`;
     }
   }
   return headers;
+};
+
+// =========================================
+// 🚀 NUEVO: INTERCEPTOR DE RESPUESTAS
+// =========================================
+const handleResponse = async (res) => {
+  // Si el token expiró o es inválido
+  if (res.status === 401) {
+    // Disparamos un evento global que el App.jsx escuchará
+    window.dispatchEvent(new Event("session_expired"));
+    throw new Error("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+  }
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error en la petición al servidor");
+  }
+
+  // Si la respuesta es un 204 (No Content), típico en DELETE o PUT, no intentamos parsear JSON
+  if (res.status === 204) return null;
+
+  return res.json();
 };
 
 // =========================
@@ -26,31 +42,25 @@ const getAuthHeaders = () => {
 // =========================
 
 export const getMateriales = async () => {
-  const res = await fetch(`${API_URL}/mats`, {
-    headers: getAuthHeaders(), // <-- Agregamos el Token aquí
-  });
-  if (!res.ok) throw new Error("Error al obtener materiales");
-  return res.json();
+  const res = await fetch(`${API_URL}/mats`, { headers: getAuthHeaders() });
+  return handleResponse(res); // Usamos nuestra nueva función
 };
 
 export const createMaterial = async (data) => {
   const res = await fetch(`${API_URL}/mats`, {
     method: "POST",
-    headers: getAuthHeaders(), // <-- Y aquí
+    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-
-  if (!res.ok) throw new Error("Error al crear material");
-  return res.json();
+  return handleResponse(res);
 };
 
 export const deleteMaterial = async (id) => {
   const res = await fetch(`${API_URL}/mats/${id}`, {
     method: "DELETE",
-    headers: getAuthHeaders(), // <-- Para borrar es obligatorio
+    headers: getAuthHeaders(),
   });
-
-  if (!res.ok) throw new Error("Error al eliminar material");
+  return handleResponse(res);
 };
 
 export const updateEstadoMaterial = async (id, estado) => {
@@ -59,8 +69,7 @@ export const updateEstadoMaterial = async (id, estado) => {
     headers: getAuthHeaders(),
     body: JSON.stringify({ estado }),
   });
-
-  if (!res.ok) throw new Error("Error al cambiar el estado");
+  return handleResponse(res);
 };
 
 // =========================
@@ -68,11 +77,8 @@ export const updateEstadoMaterial = async (id, estado) => {
 // =========================
 
 export const getAlmacen = async () => {
-  const res = await fetch(`${API_URL}/almacen`, {
-    headers: getAuthHeaders(),
-  });
-  if (!res.ok) throw new Error("Error al obtener almacén");
-  return res.json();
+  const res = await fetch(`${API_URL}/almacen`, { headers: getAuthHeaders() });
+  return handleResponse(res);
 };
 
 export const createAlmacenItem = async (data) => {
@@ -81,9 +87,7 @@ export const createAlmacenItem = async (data) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-
-  if (!res.ok) throw new Error("Error al crear material base");
-  return res.json();
+  return handleResponse(res);
 };
 
 export const deleteAlmacenItem = async (id) => {
@@ -91,35 +95,24 @@ export const deleteAlmacenItem = async (id) => {
     method: "DELETE",
     headers: getAuthHeaders(),
   });
-
-  if (!res.ok) throw new Error("Error al eliminar material base");
+  return handleResponse(res);
 };
 
 // =========================
 // 👤 USUARIOS (Login)
 // =========================
 
-export const getUsers = async () => {
-  const res = await fetch(`${API_URL}/users`, {
-    headers: getAuthHeaders(),
-  });
-  if (!res.ok) throw new Error("Error al obtener usuarios");
-  return res.json();
-};
-
-// ⚠️ El Login NO lleva getAuthHeaders() porque aún no tenemos token al iniciar sesión
 export const loginUser = async (credentials) => {
   const res = await fetch(`${API_URL}/users/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-
+  
+  // Para el login, mantenemos la lógica específica de errores
   if (!res.ok) {
-    // Intentamos capturar el error exacto que mande el backend si existe
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || "Usuario o contraseña incorrectos");
   }
-
   return res.json();
 };

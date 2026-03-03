@@ -8,6 +8,9 @@ function FormularioMaterial({ usuarioActual }) {
 
   // Estado para el Toast (Notificación)
   const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: '' });
+  
+  // NUEVO: Estado de carga para evitar doble envío
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '', brand: '', quantity: '', unit: 'unidades'
@@ -37,6 +40,10 @@ function FormularioMaterial({ usuarioActual }) {
   const handleSubmit = async (e) => {
       e.preventDefault();
 
+      if (loading) return; // Protección extra por si acaso
+
+      setLoading(true); // Bloqueamos el botón inmediatamente
+
       const datosParaEnviar = {
         ...formData,
         trabajadorId: usuarioActual.id
@@ -52,6 +59,7 @@ function FormularioMaterial({ usuarioActual }) {
         }, 1500);
       } catch (error) {
         mostrarNotificacion('Hubo un error al agregar el requerimiento.', 'error');
+        setLoading(false); // Solo reactivamos el botón si hay error (si hay éxito, se va de la vista)
       }
   };
 
@@ -121,8 +129,9 @@ function FormularioMaterial({ usuarioActual }) {
           </select>
         </div>
 
-        <button type="submit" className="btn btn-primary" style={{ marginTop: '10px' }}>
-          Guardar Requerimiento
+        {/* MODIFICADO: Aplicamos el disabled y cambiamos el texto dinámicamente */}
+        <button type="submit" className="btn btn-primary" style={{ marginTop: '10px' }} disabled={loading}>
+          {loading ? 'Guardando...' : 'Guardar Requerimiento'}
         </button>
       </form>
     </div>

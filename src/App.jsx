@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ListaMateriales from './pages/ListaMateriales';
 import FormularioMaterial from './pages/FormularioMaterial';
 import Almacen from './pages/Almacen';
@@ -17,7 +17,7 @@ function MainApp() {
   const manejarLogin = (usuario) => {
       setUsuarioActual(usuario);
       localStorage.setItem('usuarioObras', JSON.stringify(usuario));
-      navigate('/'); 
+      navigate('/');
   };
 
   const manejarLogout = () => {
@@ -25,6 +25,29 @@ function MainApp() {
     localStorage.removeItem('usuarioObras');
     navigate('/');
   };
+
+  // =========================================
+  // 🚀 NUEVO: LISTENER DE SESIÓN EXPIRADA
+  // =========================================
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      // Limpiamos los datos del usuario y redirigimos
+      setUsuarioActual(null);
+      localStorage.removeItem('usuarioObras');
+      navigate('/');
+      
+      // Notificamos al usuario por qué fue desconectado
+      alert("Tu sesión de seguridad ha expirado. Por favor, ingresa tus credenciales nuevamente.");
+    };
+
+    // Nos suscribimos al evento global emitido por api.js
+    window.addEventListener("session_expired", handleSessionExpired);
+
+    // Limpiamos el evento si el componente se desmonta (buenas prácticas)
+    return () => {
+      window.removeEventListener("session_expired", handleSessionExpired);
+    };
+  }, [navigate]);
 
   if (!usuarioActual) {
     return <Login onLogin={manejarLogin} />;
@@ -56,16 +79,16 @@ function MainApp() {
 
         <nav className="nav-links">
           {/* NavLink nos permite aplicar la clase 'active' automáticamente */}
-          <NavLink 
-            to="/" 
+          <NavLink
+            to="/"
             className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
           >
             Requerimientos
           </NavLink>
           
           {!usuarioActual.isAdmin && (
-            <NavLink 
-              to="/nuevo" 
+            <NavLink
+              to="/nuevo"
               className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
             >
               Pedir Material
@@ -73,8 +96,8 @@ function MainApp() {
           )}
 
           {usuarioActual.isAdmin && (
-            <NavLink 
-              to="/almacen" 
+            <NavLink
+              to="/almacen"
               className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
             >
               Catálogo
