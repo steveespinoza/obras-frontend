@@ -83,6 +83,15 @@ export const updateRequerimientoCompleto = async (id, data) => {
   return handleResponse(res);
 };
 
+export const getReporteMaterial = async (material, inicio, fin) => {
+  // Usamos encodeURIComponent por si el material tiene espacios (ej. "Arena Fina")
+  const res = await fetch(
+    `${API_URL}/requerimientos/reporte?material=${encodeURIComponent(material)}&inicio=${inicio}&fin=${fin}`, 
+    { headers: getAuthHeaders() }
+  );
+  return handleResponse(res);
+};
+
 // =========================
 // 📦 ALMACÉN
 // =========================

@@ -88,10 +88,31 @@ function ListaRequerimientos({ usuarioActual = {} }) {
     );
   }
 
+// NUEVO: Función para formatear la fecha Y la hora corrigiendo la zona horaria (UTC-5 para Perú)
+  const formatearFechaHora = (fechaIso) => {
+    if (!fechaIso) return "";
+    
+    // TRUCO: Si SQLite nos manda la fecha sin la 'Z' de UTC, se la agregamos manualmente.
+    // Esto fuerza a JavaScript a entender que son las 7:21 PM de Londres, 
+    // y lo convertirá automáticamente a las 2:21 PM de Perú.
+    const fechaUTC = fechaIso.endsWith('Z') ? fechaIso : `${fechaIso}Z`;
+    
+    const fecha = new Date(fechaUTC);
+    
+    return fecha.toLocaleString('es-PE', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
   const exportarAExcel = () => {
     const datosParaExcel = requerimientosVisibles.map(req => ({
       "ID Pedido": req.id,
-      "Fecha": new Date(req.fechaSolicitud).toLocaleDateString(),
+      "Fecha y Hora": formatearFechaHora(req.fechaSolicitud),
       "Artículos Totales": req.cantidadMaterialesDiferentes,
       "Estado": req.estado,
       "Responsable": req.trabajador,
@@ -134,7 +155,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
               <>
                 <div className="info-box" style={{ textAlign: 'left', marginBottom: '15px' }}>
                   <p style={{ margin: '5px 0' }}><strong>Responsable:</strong> {detallesActuales.trabajador}</p>
-                  <p style={{ margin: '5px 0' }}><strong>Fecha:</strong> {new Date(detallesActuales.fechaSolicitud).toLocaleDateString()}</p>
+                  <p style={{ margin: '5px 0' }}><strong>Fecha y Hora:</strong> {formatearFechaHora(detallesActuales.fechaSolicitud)}</p>
                   <p style={{ margin: '5px 0' }}><strong>Estado:</strong> <span className={`badge ${getStatusClass(detallesActuales.estado)}`}>{detallesActuales.estado}</span></p>
                 </div>
                 
@@ -198,7 +219,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
           <thead>
             <tr>
               <th>ID Pedido</th>
-              <th>Fecha</th>
+              <th>Fecha y Hora</th>
               <th>Artículos</th>
               <th>Estado</th>
               {isAdmin && <th>Responsable</th>}
@@ -210,7 +231,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
             {requerimientosVisibles.map((req) => (
               <tr key={req.id}>
                 <td data-label="ID Pedido">#{req.id}</td>
-                <td data-label="Fecha">{new Date(req.fechaSolicitud).toLocaleDateString()}</td>
+                <td data-label="Fecha y Hora">{formatearFechaHora(req.fechaSolicitud)}</td>
                 <td data-label="Artículos">
                   <span style={{ fontWeight: 'bold', color: '#2563eb' }}>{req.cantidadMaterialesDiferentes} items</span>
                 </td>
@@ -237,13 +258,14 @@ function ListaRequerimientos({ usuarioActual = {} }) {
                 {isAdmin && <td data-label="Especialidad">{req.especialidad}</td>}
                 
                 <td data-label="Acciones" style={{ display: 'flex', gap: '8px' }}>
-                  <button className="btn" style={{ backgroundColor: '#e2e8f0', color: '#0f172a' }} onClick={() => verDetalles(req.id)}>
+                  {/* MODIFICADO: Botón VER ahora es Amarillo con texto oscuro para buen contraste */}
+                  <button className="btn" style={{ backgroundColor: '#eab308', color: '#ffffff' }} onClick={() => verDetalles(req.id)}>
                     👁️ Ver
                   </button>
 
-                  {/* NUEVO: Botón de editar pedido. Solo visible para usuarios y si está Pendiente */}
+                  {/* MODIFICADO: Botón EDITAR ahora es Azul */}
                   {!isAdmin && req.estado === "Pendiente" && (
-                    <Link to={`/editar/${req.id}`} className="btn" style={{ backgroundColor: '#f59e0b', color: 'white', textDecoration: 'none' }}>
+                    <Link to={`/editar/${req.id}`} className="btn" style={{ backgroundColor: '#3b82f6', color: 'white', textDecoration: 'none' }}>
                       ✏️ Editar
                     </Link>
                   )}

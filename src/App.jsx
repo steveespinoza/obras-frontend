@@ -4,6 +4,7 @@ import ListaRequerimientos from './pages/ListaRequerimientos';
 import FormularioRequerimiento from './pages/FormularioRequerimiento';
 import Almacen from './pages/Almacen';
 import Login from './pages/Login';
+import Reportes from './pages/Reportes';
 
 function MainApp() {
   const [usuarioActual, setUsuarioActual] = useState(() => {
@@ -80,12 +81,16 @@ function MainApp() {
           )}
 
           {usuarioActual.isAdmin && (
-            <NavLink
-              to="/almacen"
-              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-            >
-              Catálogo
-            </NavLink>
+            <>
+              <NavLink to="/almacen" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                Catálogo
+              </NavLink>
+              
+              {/* NUEVO BOTÓN DE REPORTES */}
+              <NavLink to="/reportes" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                Reportes
+              </NavLink>
+            </>
           )}
 
           <button className="btn btn-outline-danger" onClick={manejarLogout}>
@@ -107,7 +112,11 @@ function MainApp() {
           )}
 
           {usuarioActual.isAdmin && (
-            <Route path="/almacen" element={<Almacen />} />
+            <>
+              <Route path="/almacen" element={<Almacen />} />
+              {/* NUEVA RUTA DE REPORTES */}
+              <Route path="/reportes" element={<Reportes />} />
+            </>
           )}
         </Routes>
       </main>

@@ -14,9 +14,13 @@ function FormularioRequerimiento({ usuarioActual }) {
   const [carrito, setCarrito] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
 
+  // MODIFICADO: brand inicia con 'Generico'
   const [formData, setFormData] = useState({
     id: null, 
-    name: '', brand: '', quantity: '', unit: 'unidades'
+    name: '', 
+    brand: 'Generico', 
+    quantity: '', 
+    unit: 'unidades'
   });
 
   useEffect(() => {
@@ -53,17 +57,30 @@ function FormularioRequerimiento({ usuarioActual }) {
 
   const procesarFormulario = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.quantity || !formData.brand) return;
+    
+    // MODIFICADO: Ya no exigimos que brand tenga texto en la validación inicial
+    if (!formData.name || !formData.quantity) {
+      mostrarNotificacion("Completa el nombre y la cantidad del material", "error");
+      return;
+    }
+
+    // MODIFICADO: Si el usuario borró el texto y lo dejó en blanco, forzamos 'Generico'
+    const materialAEnviar = {
+      ...formData,
+      brand: formData.brand.trim() === '' ? 'Generico' : formData.brand
+    };
 
     if (editIndex !== null) {
       const nuevoCarrito = [...carrito];
-      nuevoCarrito[editIndex] = formData;
+      nuevoCarrito[editIndex] = materialAEnviar;
       setCarrito(nuevoCarrito);
       setEditIndex(null);
     } else {
-      setCarrito([...carrito, formData]);
+      setCarrito([...carrito, materialAEnviar]);
     }
-    setFormData({ id: null, name: '', brand: '', quantity: '', unit: 'unidades' });
+    
+    // MODIFICADO: Al limpiar el formulario, vuelve a 'Generico'
+    setFormData({ id: null, name: '', brand: 'Generico', quantity: '', unit: 'unidades' });
   };
 
   const editarDelCarrito = (index) => {
@@ -73,7 +90,8 @@ function FormularioRequerimiento({ usuarioActual }) {
   };
 
   const cancelarEdicion = () => {
-    setFormData({ id: null, name: '', brand: '', quantity: '', unit: 'unidades' });
+    // MODIFICADO: Al cancelar, vuelve a 'Generico'
+    setFormData({ id: null, name: '', brand: 'Generico', quantity: '', unit: 'unidades' });
     setEditIndex(null);
   };
 
@@ -133,7 +151,15 @@ function FormularioRequerimiento({ usuarioActual }) {
         <datalist id="lista-almacen">
           {almacen.map(mat => <option key={mat.id} value={mat.name} />)}
         </datalist>
-        <input type="text" name="brand" placeholder="Marca (ej. Sol, Aceros Arequipa)" value={formData.brand} onChange={handleChange} required />
+        
+        {/* MODIFICADO: Se quitó el atributo "required" y se actualizó el placeholder */}
+        <input 
+          type="text" 
+          name="brand" 
+          placeholder="Marca (Deja vacío para Genérico)" 
+          value={formData.brand} 
+          onChange={handleChange} 
+        />
         
         <div className="form-row">
           <input type="number" name="quantity" step="0.01" placeholder="Cantidad" value={formData.quantity} onChange={handleChange} required />
@@ -153,9 +179,6 @@ function FormularioRequerimiento({ usuarioActual }) {
         </div>
       </form>
 
-      {/* ============================================================
-          NUEVA SECCIÓN DE MATERIALES (DISEÑO DE TARJETAS MODERNAS)
-          ============================================================ */}
       <div style={{ marginTop: '40px' }}>
         <h4 style={{ color: '#334155', borderBottom: '2px solid #f1f5f9', paddingBottom: '10px', marginBottom: '20px' }}>
           📦 Materiales en este Pedido <span style={{ backgroundColor: '#2563eb', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '14px', marginLeft: '8px' }}>{carrito.length}</span>
@@ -179,11 +202,10 @@ function FormularioRequerimiento({ usuarioActual }) {
                 borderRadius: '12px',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                 transition: 'all 0.2s ease',
-                flexWrap: 'wrap', // Permite que en móviles se adapte
+                flexWrap: 'wrap', 
                 gap: '15px'
               }}>
                 
-                {/* 1. Información del Material */}
                 <div style={{ flex: '1 1 250px' }}>
                   <h5 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0f172a' }}>{item.name}</h5>
                   <span style={{ fontSize: '13px', color: '#475569', backgroundColor: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', fontWeight: '500' }}>
@@ -191,15 +213,12 @@ function FormularioRequerimiento({ usuarioActual }) {
                   </span>
                 </div>
 
-                {/* 2. Cantidad destacada */}
                 <div style={{ padding: '0 15px', textAlign: 'center', minWidth: '100px' }}>
                   <div style={{ fontSize: '20px', fontWeight: '800', color: '#2563eb' }}>{item.quantity}</div>
                   <div style={{ fontSize: '12px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>{item.unit}</div>
                 </div>
 
-                {/* 3. Botones de Acción Estilizados */}
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  {/* Botón Editar Suave */}
                   <button 
                     type="button" 
                     onClick={() => editarDelCarrito(index)}
@@ -216,7 +235,6 @@ function FormularioRequerimiento({ usuarioActual }) {
                     ✏️ Editar
                   </button>
 
-                  {/* Botón Eliminar Suave */}
                   <button 
                     type="button" 
                     onClick={() => quitarDelCarrito(index)}
