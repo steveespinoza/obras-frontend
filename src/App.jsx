@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import ListaMateriales from './pages/ListaMateriales';
-import FormularioMaterial from './pages/FormularioMaterial';
+import ListaRequerimientos from './pages/ListaRequerimientos';
+import FormularioRequerimiento from './pages/FormularioRequerimiento';
 import Almacen from './pages/Almacen';
 import Login from './pages/Login';
 
 function MainApp() {
-  // 🔐 Persistencia de sesión
   const [usuarioActual, setUsuarioActual] = useState(() => {
     const usuarioGuardado = localStorage.getItem('usuarioObras');
     return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
@@ -26,40 +25,26 @@ function MainApp() {
     navigate('/');
   };
 
-  // =========================================
-  // 🚀 NUEVO: LISTENER DE SESIÓN EXPIRADA
-  // =========================================
   useEffect(() => {
     const handleSessionExpired = () => {
-      // Limpiamos los datos del usuario y redirigimos
       setUsuarioActual(null);
       localStorage.removeItem('usuarioObras');
       navigate('/');
-      
-      // Notificamos al usuario por qué fue desconectado
       alert("Tu sesión de seguridad ha expirado. Por favor, ingresa tus credenciales nuevamente.");
     };
 
-    // Nos suscribimos al evento global emitido por api.js
     window.addEventListener("session_expired", handleSessionExpired);
-
-    // Limpiamos el evento si el componente se desmonta (buenas prácticas)
-    return () => {
-      window.removeEventListener("session_expired", handleSessionExpired);
-    };
+    return () => window.removeEventListener("session_expired", handleSessionExpired);
   }, [navigate]);
 
   if (!usuarioActual) {
     return <Login onLogin={manejarLogin} />;
   }
 
-  // Obtenemos la inicial del usuario para el avatar visual
   const inicialUsuario = usuarioActual?.name ? usuarioActual.name.charAt(0).toUpperCase() : 'U';
 
   return (
     <div className="container">
-
-      {/* HEADER PREMIUM OSCURO */}
       <header className="header">
         <div className="header-brand">
           <div className="logo-icon">📦</div>
@@ -78,12 +63,11 @@ function MainApp() {
         </div>
 
         <nav className="nav-links">
-          {/* NavLink nos permite aplicar la clase 'active' automáticamente */}
           <NavLink
             to="/"
             className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
           >
-            Requerimientos
+            Pedidos
           </NavLink>
           
           {!usuarioActual.isAdmin && (
@@ -91,7 +75,7 @@ function MainApp() {
               to="/nuevo"
               className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
             >
-              Pedir Material
+              Crear Pedido
             </NavLink>
           )}
 
@@ -104,20 +88,22 @@ function MainApp() {
             </NavLink>
           )}
 
-          {/* Botón Salir adaptado al fondo oscuro */}
           <button className="btn btn-outline-danger" onClick={manejarLogout}>
             Salir
           </button>
         </nav>
       </header>
 
-      {/* CONTENIDO PRINCIPAL (Con fondo claro) */}
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<ListaMateriales usuarioActual={usuarioActual} />} />
+          <Route path="/" element={<ListaRequerimientos usuarioActual={usuarioActual} />} />
 
           {!usuarioActual.isAdmin && (
-            <Route path="/nuevo" element={<FormularioMaterial usuarioActual={usuarioActual} />} />
+            <>
+              <Route path="/nuevo" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
+              {/* NUEVA RUTA PARA EDITAR EL PEDIDO COMPLETO */}
+              <Route path="/editar/:id" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
+            </>
           )}
 
           {usuarioActual.isAdmin && (

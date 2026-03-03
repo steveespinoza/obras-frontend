@@ -16,12 +16,10 @@ const getAuthHeaders = () => {
 };
 
 // =========================================
-// 🚀 NUEVO: INTERCEPTOR DE RESPUESTAS
+// INTERCEPTOR DE RESPUESTAS
 // =========================================
 const handleResponse = async (res) => {
-  // Si el token expiró o es inválido
   if (res.status === 401) {
-    // Disparamos un evento global que el App.jsx escuchará
     window.dispatchEvent(new Event("session_expired"));
     throw new Error("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
   }
@@ -31,23 +29,27 @@ const handleResponse = async (res) => {
     throw new Error(errorData.message || "Error en la petición al servidor");
   }
 
-  // Si la respuesta es un 204 (No Content), típico en DELETE o PUT, no intentamos parsear JSON
   if (res.status === 204) return null;
 
   return res.json();
 };
 
 // =========================
-// 📦 MATERIALES
+// 📦 REQUERIMIENTOS (Pedidos)
 // =========================
 
-export const getMateriales = async () => {
-  const res = await fetch(`${API_URL}/mats`, { headers: getAuthHeaders() });
-  return handleResponse(res); // Usamos nuestra nueva función
+export const getRequerimientos = async () => {
+  const res = await fetch(`${API_URL}/requerimientos`, { headers: getAuthHeaders() });
+  return handleResponse(res);
 };
 
-export const createMaterial = async (data) => {
-  const res = await fetch(`${API_URL}/mats`, {
+export const getRequerimientoById = async (id) => {
+  const res = await fetch(`${API_URL}/requerimientos/${id}`, { headers: getAuthHeaders() });
+  return handleResponse(res);
+};
+
+export const createRequerimiento = async (data) => {
+  const res = await fetch(`${API_URL}/requerimientos`, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -55,19 +57,28 @@ export const createMaterial = async (data) => {
   return handleResponse(res);
 };
 
-export const deleteMaterial = async (id) => {
-  const res = await fetch(`${API_URL}/mats/${id}`, {
+export const deleteRequerimiento = async (id) => {
+  const res = await fetch(`${API_URL}/requerimientos/${id}`, {
     method: "DELETE",
     headers: getAuthHeaders(),
   });
   return handleResponse(res);
 };
 
-export const updateEstadoMaterial = async (id, estado) => {
-  const res = await fetch(`${API_URL}/mats/${id}/estado`, {
+export const updateEstadoRequerimiento = async (id, estado) => {
+  const res = await fetch(`${API_URL}/requerimientos/${id}/estado`, {
     method: "PUT",
     headers: getAuthHeaders(),
     body: JSON.stringify({ estado }),
+  });
+  return handleResponse(res);
+};
+
+export const updateRequerimientoCompleto = async (id, data) => {
+  const res = await fetch(`${API_URL}/requerimientos/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
   });
   return handleResponse(res);
 };
@@ -109,7 +120,6 @@ export const loginUser = async (credentials) => {
     body: JSON.stringify(credentials),
   });
   
-  // Para el login, mantenemos la lógica específica de errores
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || "Usuario o contraseña incorrectos");
