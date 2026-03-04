@@ -1,113 +1,65 @@
 /* =========================================
-   MÓDULO DE REPORTES
+   MÓDULO DE REPORTES (Clean UI)
    ========================================= */
-
-/* Contenedor principal de Reportes */
 .reportes-container {
-  background-color: #f8fafc;
-  border: 1px solid #cbd5e1;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
-.reportes-title {
-  margin: 0;
-  color: #1e293b;
-}
+.reportes-title { margin: 0; color: var(--primary); font-weight: 800; }
 
-/* =========================================
-   FORMULARIO DE BÚSQUEDA (FILTROS)
-   ========================================= */
 .reportes-form {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 30px;
 }
 
-.reportes-form-row {
-  align-items: flex-end;
-}
+.reportes-form-row { align-items: flex-end; gap: 20px; }
 
-.reportes-form-group {
-  flex: 1 1 200px;
-}
-
-.reportes-form-group-small {
-  flex: 1 1 150px;
-}
-
-.reportes-form-action {
-  flex: 0 0 auto;
-}
+.reportes-form-group { flex: 1 1 200px; }
+.reportes-form-group-small { flex: 1 1 150px; }
+.reportes-form-action { flex: 0 0 auto; }
 
 .reportes-label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #475569;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-search {
-  padding: 10px 20px;
-  height: 42px;
+  padding: 12px 24px;
+  height: 46px; /* Para alinear con los inputs nuevos */
 }
 
-/* =========================================
-   RESULTADOS DE LA BÚSQUEDA
-   ========================================= */
-.reportes-results {
-  margin-top: 20px;
-}
-
-/* Estado cuando no hay resultados */
 .reportes-empty {
-  padding: 40px;
-  color: #64748b;
-  background-color: #ffffff;
-  border: 1px dashed #cbd5e1;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  background-color: var(--bg-body);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
 }
 
-.reportes-empty-icon {
-  font-size: 30px;
-  margin-bottom: 10px;
-}
-
-.reportes-empty p {
-  margin: 0;
-}
-
-/* Tabla de resultados */
-.reportes-table-wrapper {
-  background-color: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.04);
-  overflow: hidden;
-}
-
-.reportes-table {
-  margin: 0;
-}
-
-.reportes-thead {
-  background-color: #f1f5f9;
-  border-bottom: 2px solid #cbd5e1;
-}
-
-.reportes-tbody-tr {
-  border-bottom: 1px solid #f1f5f9;
-}
+.reportes-empty-icon { font-size: 32px; margin-bottom: 15px; opacity: 0.5; }
 
 .badge-unidad {
-  background-color: #e2e8f0;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: bold;
-  color: #475569;
+  background-color: var(--bg-body);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
 }
 
 .texto-total-solicitado {
-  font-size: 18px;
-  font-weight: 900;
-  color: #16a34a; /* verde success */
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary); /* Azul en vez de verde para un look más corporativo */
 }

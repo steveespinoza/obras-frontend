@@ -1,5 +1,5 @@
 /* =========================================
-   CONTENEDOR PRINCIPAL LOGIN
+   CONTENEDOR PRINCIPAL LOGIN (Clean UI)
    ========================================= */
 .login-container {
   display: flex;
@@ -7,41 +7,53 @@
   align-items: center;
   min-height: 100vh;
   padding: 20px;
-  background-color: var(--bg-body);
+  background-color: var(--bg-body); /* Fondo gris azulado claro */
 }
 
 .login-card {
   background: var(--bg-card);
-  padding: 40px;
-  border-radius: 16px;
+  padding: 50px 40px; /* Más padding para respirar */
+  border-radius: 12px;
+  border: 1px solid var(--border-color); /* Borde sutil flat */
   box-shadow: var(--shadow-md);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   text-align: center;
 }
 
 .login-card h2 {
   margin-top: 0;
-  margin-bottom: 25px;
-  color: var(--text-main);
+  margin-bottom: 35px;
+  color: var(--primary); /* Título en azul oscuro corporativo */
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-size: 28px;
 }
 
 .login-card form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px; /* Inputs más separados */
 }
 
 /* =========================================
-   MENSAJES DE ERROR
+   MENSAJES DE ERROR FLAT
    ========================================= */
 .error-box {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px solid #f87171;
+  background-color: #FEF2F2; /* Rojo casi blanco */
+  color: #B91C1C; /* Rojo profundo */
+  padding: 14px;
+  border-radius: 6px;
+  margin-bottom: 25px;
+  border: 1px solid #FCA5A5; /* Borde rojo sutil */
   font-size: 14px;
   font-weight: 500;
+  text-align: left; /* Queda más formal alineado a la izquierda */
+}
+
+/* Botón de login específico para ocupar todo el ancho */
+.login-card .btn {
+  padding: 14px;
+  font-size: 16px;
+  margin-top: 10px;
 }

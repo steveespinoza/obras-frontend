@@ -1,79 +1,151 @@
 /* =========================================
-   HEADER PREMIUM OSCURO
+   HEADER CLEAN UI (Azul Oscuro)
    ========================================= */
 .header {
   background: var(--bg-header-dark);
-  padding: 15px 25px;
-  border-radius: 16px;
-  box-shadow: var(--shadow-sm);
+  padding: 16px 30px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 40px;
 }
 
-.header-brand { display: flex; align-items: center; gap: 15px; }
-
-.logo-icon {
-  font-size: 2rem;
-  background: rgba(255,255,255,0.05);
-  width: 45px; height: 45px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 12px;
-}
-
-.header-info { display: flex; flex-direction: column; gap: 2px; }
-.header-title {
-  margin: 0; font-size: 1.25rem; font-weight: 700;
-  color: var(--text-header); letter-spacing: -0.5px;
+.header-brand { 
+  display: flex; 
+  align-items: center; 
+  gap: 20px; 
 }
 
 /* =========================================
    PERFIL DE USUARIO
    ========================================= */
 .user-badge {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 0.85rem; color: rgba(255,255,255,0.7);
+  display: flex; 
+  align-items: center; 
+  gap: 12px;
+  font-size: 0.9rem; 
+  color: var(--text-header);
 }
 
 .avatar {
-  background-color: var(--text-header); color: var(--bg-header-dark);
-  font-weight: bold; width: 20px; height: 20px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; font-size: 0.7rem;
+  background-color: var(--bg-body); 
+  color: var(--primary);
+  font-weight: 700; 
+  width: 32px; 
+  height: 32px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  border-radius: 50%; 
+  font-size: 0.85rem;
 }
 
-.user-name { font-weight: 600; color: var(--text-header); }
-.role-tag {
-  padding: 2px 8px; border-radius: 12px; font-size: 0.7rem;
-  font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+.user-name { 
+  font-weight: 500; 
+  letter-spacing: 0.5px;
 }
-.role-admin { background-color: #fef3c7; color: #b45309; }
-.role-user { background-color: #e0e7ff; color: #4338ca; }
+
+.role-tag {
+  padding: 4px 10px; 
+  border-radius: 4px; 
+  font-size: 0.7rem;
+  font-weight: 700; 
+  text-transform: uppercase; 
+  letter-spacing: 0.8px;
+}
+
+/* Ajuste de colores de los roles para que resalten en el fondo oscuro */
+.role-admin { background-color: rgba(245, 158, 11, 0.2); color: #FCD34D; }
+.role-user { background-color: rgba(255, 255, 255, 0.1); color: #E2E8F0; }
 
 /* =========================================
-   NAVEGACIÓN TIPO PÍLDORAS
+   NAVEGACIÓN MINIMALISTA
    ========================================= */
-.nav-links { display: flex; align-items: center; gap: 8px; }
-.nav-item {
-  text-decoration: none; font-weight: 500;
-  color: rgba(255,255,255,0.7); padding: 8px 16px;
-  border-radius: 8px; transition: all 0.2s ease; font-size: 0.95rem;
+.nav-links { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
 }
-.nav-item:hover { background-color: rgba(255,255,255,0.05); color: var(--text-header); }
+
+.nav-item {
+  text-decoration: none; 
+  font-weight: 500;
+  color: rgba(255,255,255,0.6); 
+  padding: 10px 18px;
+  border-radius: 6px; 
+  transition: all 0.2s ease; 
+  font-size: 0.95rem;
+}
+
+.nav-item:hover { 
+  color: var(--text-header); 
+  background-color: rgba(255,255,255,0.05);
+}
+
 .nav-item.active {
-  background-color: var(--primary-bright); color: white;
-  font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background-color: #FFFFFF; 
+  color: var(--primary);
+  font-weight: 600; 
+}
+
+/* =========================================
+   LOGO JyM (ESCRITORIO - BASE)
+   ========================================= */
+.logo-img {
+  height: 73px; /* Ligeramente más pequeño para no robar protagonismo */
+  width: auto; 
+  object-fit: contain;
+  border-radius: 4px; 
+  background-color: white; 
+  padding: 6px; 
+}
+
+.header-info { 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center;
 }
 
 /* =========================================
    RESPONSIVE HEADER
    ========================================= */
 @media (max-width: 768px) {
-  .header { flex-direction: column; align-items: stretch; gap: 20px; }
-  .header-brand { justify-content: center; text-align: center; }
-  .nav-links { flex-wrap: wrap; justify-content: center; width: 100%; gap: 10px; }
-  .nav-item { flex: 1 1 calc(50% - 10px); text-align: center; }
-  .nav-links .btn { width: 100%; }
+  .header { 
+    flex-direction: column; 
+    align-items: stretch; 
+    gap: 20px; 
+    padding: 20px;
+  }
+  
+  .header-brand { 
+    flex-direction: column; 
+    width: 100%; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center; 
+  }
+  .logo-img {
+    height: auto; /* Anula los 55px fijos en celulares */
+    width: 100%; /* Ocupa todo el ancho */
+    max-width: 100%; 
+    max-height: 120px; /* Evita que se haga absurdamente gigante en tablets */
+  }
+
+  .nav-links { 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    width: 100%; 
+  }
+  
+  .nav-item { 
+    flex: 1 1 calc(50% - 10px); 
+    text-align: center; 
+  }
+  
+  .nav-links .btn { 
+    width: 100%; 
+    margin-top: 10px;
+  }
 }

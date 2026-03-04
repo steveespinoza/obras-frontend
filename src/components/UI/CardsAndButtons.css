@@ -1,24 +1,31 @@
 /* =========================================
-   TARJETAS (Cards)
+   TARJETAS (Cards Clean UI)
    ========================================= */
 .card {
   background: var(--bg-card);
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  margin-bottom: 20px;
+  padding: 30px; /* Aumentamos el padding interno para que respire */
+  border-radius: 8px; /* Bordes ligeramente menos redondeados (más serios) */
+  border: 1px solid var(--border-color); /* Flat Design: delimitación por borde */
+  box-shadow: var(--shadow-sm); /* Sombra casi nula */
+  margin-bottom: 24px;
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md); /* Pequeña elevación al pasar el mouse */
 }
 
 /* =========================================
    BOTONES
    ========================================= */
 .btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 1px solid transparent; /* Preparado para botones outline */
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
+  letter-spacing: 0.3px; /* Pequeño espaciado para mejor lectura */
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
@@ -26,31 +33,38 @@
   gap: 8px;
 }
 
+/* Eliminamos el translateY para hacerlo 100% Flat */
 .btn:hover {
-  opacity: 0.85;
-  transform: translateY(-1px);
+  opacity: 0.9;
 }
 
 .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
+  background-color: #94A3B8; /* Gris uniforme para desactivado */
 }
 
-.btn-primary { background-color: var(--primary); color: white; }
-.btn-success { background-color: var(--success); color: white; }
+/* Botones Sólidos */
+.btn-primary { 
+  background-color: var(--primary); 
+  color: white; 
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-success { background-color: var(--adding); color: white; }
 .btn-danger { background-color: var(--danger); color: white; }
 
-/* Botón fantasma/bordeado para el Header OSCURO */
+/* Botón fantasma para el Header OSCURO */
 .btn-outline-danger {
   background-color: transparent;
-  color: var(--text-header);
-  border: 1px solid rgba(255,255,255,0.3);
+  color: #FCA5A5; /* Rojo claro para contrastar en fondo oscuro */
+  border: 1px solid rgba(252, 165, 165, 0.3);
 }
 
 .btn-outline-danger:hover {
-  background-color: var(--danger);
+  background-color: rgba(239, 68, 68, 0.1); /* Fondo rojo semitransparente */
   border-color: var(--danger);
-  color: white;
-  opacity: 1;
+  color: #FCA5A5;
 }

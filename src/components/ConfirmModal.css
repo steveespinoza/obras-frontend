@@ -1,19 +1,49 @@
 /* =========================================
-   MODAL DE CONFIRMACIÓN
+   MODAL DE CONFIRMACIÓN (Clean UI)
    ========================================= */
 .modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 1000; animation: fadeIn 0.2s ease-in-out;
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100vw; 
+  height: 100vh;
+  background-color: rgba(11, 22, 44, 0.6); /* Fondo azul oscuro semitransparente */
+  backdrop-filter: blur(2px); /* Toque moderno: desenfoque del fondo */
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  z-index: 1000; 
+  animation: fadeIn 0.2s ease-in-out;
 }
 
 .modal-content {
-  background: var(--bg-card); padding: 30px; border-radius: 12px;
-  box-shadow: var(--shadow-md); max-width: 400px; width: 90%;
-  text-align: center; animation: slideUp 0.3s ease-out;
+  background: var(--bg-card); 
+  padding: 40px 30px; /* Más espacio interior */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(11, 22, 44, 0.1); /* Sombra elegante */
+  max-width: 420px; 
+  width: 90%;
+  text-align: center; 
+  animation: slideUp 0.3s ease-out;
+  border: 1px solid var(--border-color);
 }
 
-.modal-content h3 { margin-top: 0; color: var(--text-main); }
-.modal-content p { color: var(--text-muted); margin-bottom: 25px; }
-.modal-actions { display: flex; justify-content: center; gap: 15px; }
+.modal-content h3 { 
+  margin-top: 0; 
+  color: var(--primary); /* Título azul oscuro */
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.modal-content p { 
+  color: var(--text-muted); 
+  margin-bottom: 30px; 
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.modal-actions { 
+  display: flex; 
+  justify-content: center; 
+  gap: 15px; 
+}

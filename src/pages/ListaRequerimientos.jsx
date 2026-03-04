@@ -123,7 +123,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
   };
 
   const getStatusClass = (estado) => {
-    if (estado === "Aprobado") return "status-aprobado";
+    if (estado === "Listo") return "status-listo";
     if (estado === "Rechazado") return "status-rechazado";
     return "status-pendiente";
   };
@@ -241,7 +241,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
                       className={`select-status ${getStatusClass(req.estado || "Pendiente")}`}
                     >
                       <option value="Pendiente">Pendiente ⏳</option>
-                      <option value="Aprobado">Aprobado ✅</option>
+                      <option value="Listo">Listo ✅</option>
                       <option value="Rechazado">Rechazado ❌</option>
                     </select>
                   ) : (

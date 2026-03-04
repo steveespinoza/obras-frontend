@@ -1,78 +1,66 @@
 /* =========================================
-   LISTA DE REQUERIMIENTOS Y MODAL
+   LISTA DE REQUERIMIENTOS Y MODAL (Flat)
    ========================================= */
-
-/* Modal de Detalles Ampliado */
 .modal-content-lg {
-  max-width: 600px;
+  max-width: 650px; /* Un poco más ancho para las tablas */
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-}
-
-.modal-title {
-  margin: 0;
+  margin-bottom: 25px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
 }
 
 .btn-close-modal {
-  background-color: #e5e7eb;
-  color: #374151;
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .btn-close-modal:hover {
-  background-color: #d1d5db;
+  background-color: var(--bg-body);
+  color: var(--text-main);
 }
 
-/* Info Box del Modal */
 .info-box-left {
   text-align: left;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
+  background-color: var(--bg-body);
+  border: none;
+  padding: 20px;
+  border-radius: 8px;
 }
 
-.info-text {
-  margin: 5px 0;
-}
+.info-text { margin: 8px 0; color: var(--text-main); }
+.table-left { text-align: left; }
 
-.table-left {
-  text-align: left;
-}
-
-/* Título principal de la vista */
 .title-no-margin {
   margin: 0;
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 24px;
 }
 
-/* Elementos de la tabla principal */
 .items-count {
-  font-weight: bold;
-  color: #2563eb;
+  font-weight: 700;
+  color: var(--text-muted); /* Gris en vez de azul brillante */
+  background-color: var(--bg-body);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
-.actions-cell {
-  display: flex;
-  gap: 8px;
-}
+.actions-cell { display: flex; gap: 8px; }
 
-/* Botones personalizados de la tabla */
-.btn-view {
-  background-color: #eab308;
-  color: #ffffff;
-}
+/* Botones de acción minimalistas */
+.btn-view { background-color: var(--primary); color: white; }
+.btn-view:hover { background-color: var(--primary-hover); }
 
-.btn-view:hover {
-  background-color: #ca8a04;
-}
-
-.btn-edit {
-  background-color: #3b82f6;
-  color: white;
-  text-decoration: none;
-}
-
-.btn-edit:hover {
-  background-color: #2563eb;
-}
+.btn-edit { background-color: white; color: var(--primary); border: 1px solid var(--primary); text-decoration: none; }
+.btn-edit:hover { background-color: var(--primary-light); }

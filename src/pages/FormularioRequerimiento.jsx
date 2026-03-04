@@ -171,7 +171,7 @@ function FormularioRequerimiento({ usuarioActual }) {
           onClick={enviarRequerimientoCompleto} 
           disabled={loading || carrito.length === 0 || editIndex !== null}
         >
-          {loading ? 'Procesando...' : id ? '💾 Guardar Pedido Actualizado' : '🚀 Enviar Pedido a Revisión'}
+          {loading ? 'Procesando...' : id ? '💾 Guardar Pedido Actualizado' : ' Enviar Pedido a Revisión'}
         </button>
       </div>
     </div>

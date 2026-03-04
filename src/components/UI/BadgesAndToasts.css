@@ -1,29 +1,80 @@
 /* =========================================
-   BADGES (Estados)
+   BADGES (Estados Minimalistas)
    ========================================= */
 .badge {
-  padding: 6px 12px; border-radius: 6px; font-weight: 600;
-  font-size: 13px; display: inline-block; text-align: center;
+  padding: 6px 12px; 
+  border-radius: 20px; /* Estilo píldora */
+  font-weight: 600;
+  font-size: 12px; 
+  letter-spacing: 0.3px;
+  display: inline-block; 
+  text-align: center;
 }
 
+/* Select de estado integrado al estilo de los badges */
 .select-status {
-  padding: 6px 10px; border-radius: 6px; border: 1px solid transparent;
-  font-weight: 600; font-size: 13px; cursor: pointer; width: 130px;
+  padding: 6px 12px; 
+  border-radius: 20px; 
+  border: 1px solid transparent;
+  font-weight: 600; 
+  font-size: 12px; 
+  cursor: pointer; 
+  width: auto;
+  min-width: 120px;
+  appearance: none; /* Quita la flecha nativa para un look más limpio */
+  text-align: center;
+  transition: all 0.2s ease;
 }
-.select-status option { background-color: var(--bg-card); color: var(--text-main); font-weight: normal; }
+.select-status option { 
+  background-color: var(--bg-card); 
+  color: var(--text-main); 
+  font-weight: normal; 
+}
 
-.status-aprobado { background-color: var(--success); color: white; }
-.status-rechazado { background-color: var(--danger); color: white; }
-.status-pendiente { background-color: var(--warning); color: #854d0e; }
+/* Colores Flat 2.0 (Fondo pastel, texto oscuro del mismo tono) */
+.status-listo { 
+  background-color: #D1FAE5; /* Verde pastel */
+  color: #065F46; /* Verde oscuro */
+}
+
+.status-rechazado { 
+  background-color: #FEE2E2; /* Rojo pastel */
+  color: #991B1B; /* Rojo oscuro */
+}
+
+.status-pendiente { 
+  background-color: #FEF3C7; /* Amarillo/Ambar pastel */
+  color: #92400E; /* Ambar oscuro */
+}
 
 /* =========================================
-   TOASTS (Notificaciones)
+   TOASTS (Notificaciones Elegantes)
    ========================================= */
 .toast-container {
-  position: fixed; bottom: 20px; right: 20px; padding: 15px 25px;
-  border-radius: 8px; color: white; font-weight: 600;
-  box-shadow: var(--shadow-md); z-index: 1050;
-  animation: slideInRight 0.3s ease-out;
+  position: fixed; 
+  bottom: 30px; 
+  right: 30px; 
+  padding: 16px 24px;
+  border-radius: 8px; 
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: var(--shadow-md); 
+  z-index: 1050;
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.toast-success { background-color: var(--success); }
-.toast-error { background-color: var(--danger); }
+
+/* Toasts oscuros/sólidos para alto contraste */
+.toast-success { 
+  background-color: var(--primary); /* Usamos tu azul oscuro principal */
+  color: white; 
+  border-left: 4px solid var(--success); /* Solo una franja verde lateral */
+}
+
+.toast-error { 
+  background-color: var(--primary); 
+  color: white; 
+  border-left: 4px solid var(--danger); /* Franja roja lateral */
+}

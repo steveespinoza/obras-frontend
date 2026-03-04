@@ -1,26 +1,33 @@
 /* =========================================
-   1. VARIABLES GLOBALES (Diseño Moderno)
+   1. VARIABLES GLOBALES (Clean UI - Flat 2.0)
    ========================================= */
 :root {
-  --bg-body: #f4f6f9;
-  --bg-card: #ffffff;
-  --bg-header-dark: #1e293b;
+  /* Fondos */
+  --bg-body: #F4F7F9; /* Gris azulado ultra claro para que el blanco resalte */
+  --bg-card: #FFFFFF; /* Blanco puro para el contenido */
+  --bg-header-dark: #0B162C; /* Azul Oscuro Profundo / Corporativo */
   
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --text-header: #ffffff;
+  /* Textos */
+  --text-main: #1E293B; /* Casi negro para legibilidad perfecta */
+  --text-muted: #64748B; /* Gris medio para datos secundarios */
+  --text-header: #FFFFFF; /* Blanco para contrastar en el header */
   
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-bright: #60a5fa;
-  --primary-light: #eff6ff; 
-  --success: #16a34a;
-  --danger: #dc2626;
-  --warning: #f59e0b;
+  /* Colores Principales */
+  --primary: #0B162C; /* Azul Oscuro como color de acción principal */
+  --primary-hover: #1A2B4C; /* Un azul ligeramente más claro al pasar el mouse */
+  --primary-bright: #2563EB; /* Azul vibrante solo para acentos o links */
+  --primary-light: #F0F4F8; /* Fondo suave para estados de focus/hover */
   
-  --border-color: #d1d5db;
-  --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
-  --shadow-md: 0 6px 15px rgba(0,0,0,0.08);
+  /* Estados (Versiones más limpias y menos chillonas) */
+  --adding:#1A2B4C;
+  --success: #10B981; 
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  
+  /* Bordes y Sombras Flat 2.0 */
+  --border-color: #E2E8F0; /* Borde gris muy suave */
+  --shadow-sm: 0 1px 2px rgba(11, 22, 44, 0.04); /* Sombra imperceptible */
+  --shadow-md: 0 4px 6px rgba(11, 22, 44, 0.05), 0 1px 3px rgba(11, 22, 44, 0.03);
 }
 
 /* =========================================
@@ -32,10 +39,11 @@
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-body);
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased; /* Suaviza las fuentes */
 }
 
 /* =========================================
@@ -44,7 +52,7 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 40px 20px; /* Más espacio en blanco (whitespace) */
 }
 
 .main-content {
@@ -67,11 +75,11 @@ body {
 }
 
 @keyframes slideUp { 
-  from { transform: translateY(20px); opacity: 0; } 
+  from { transform: translateY(10px); opacity: 0; } /* Animación más sutil */
   to { transform: translateY(0); opacity: 1; } 
 }
 
 @keyframes slideInRight { 
-  from { transform: translateX(100%); opacity: 0; } 
+  from { transform: translateX(20px); opacity: 0; } 
   to { transform: translateX(0); opacity: 1; } 
 }

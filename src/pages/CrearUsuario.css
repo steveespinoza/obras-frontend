@@ -1,112 +1,68 @@
 /* =========================================
-   CONTENEDOR PRINCIPAL
+   MÓDULO DE USUARIOS (Clean UI)
    ========================================= */
 .cu-container {
   max-width: 900px;
   margin: 0 auto;
 }
 
-.cu-title {
-  margin: 0;
-  color: #1e293b;
-}
+.cu-title { margin: 0; color: var(--primary); font-weight: 800; }
 
-/* =========================================
-   SECCIÓN DEL FORMULARIO
-   ========================================= */
 .cu-form-section {
-  background-color: #f8fafc;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  padding: 0 0 30px 0;
   margin-bottom: 40px;
 }
 
 .cu-section-title {
   margin-top: 0;
-  margin-bottom: 15px;
-  color: #334155;
+  margin-bottom: 20px;
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .cu-form-row {
   display: flex;
-  gap: 15px;
+  gap: 20px;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
-/* El primer form-row no necesita margen superior */
-.cu-form-section > .cu-form-row:first-of-type {
-  margin-top: 0;
-}
-
-.cu-form-group {
-  flex: 1 1 200px;
-}
+.cu-form-group { flex: 1 1 200px; }
 
 .cu-label {
-  font-weight: bold;
-  font-size: 14px;
-  color: #475569;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .cu-form-actions {
-  margin-top: 25px;
+  margin-top: 30px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: flex-end;
-}
-
-.btn-secondary {
-  background-color: #e2e8f0;
-  color: #475569;
-}
-
-.btn-secondary:hover {
-  background-color: #cbd5e1;
-}
-
-/* =========================================
-   SECCIÓN DE LA TABLA
-   ========================================= */
-.cu-table-section {
-  border-top: 2px solid #f1f5f9;
+  border-top: 1px solid var(--border-color);
   padding-top: 20px;
 }
 
-.cu-table-wrapper {
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background-color: #ffffff;
-  overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla interior */
-}
-
-.cu-thead {
-  background-color: #f1f5f9;
-}
-
-.cu-tbody-tr {
-  border-bottom: 1px solid #f1f5f9;
-}
+.cu-table-section { padding-top: 10px; }
 
 .cu-username-badge {
-  background-color: #e0f2fe;
-  color: #0369a1;
-  padding: 4px 8px;
-  border-radius: 6px;
+  background-color: var(--bg-body);
+  color: var(--primary);
+  padding: 6px 10px;
+  border-radius: 4px;
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
 }
 
-.cu-empty-cell {
-  padding: 30px;
-  color: #64748b;
+.cu-empty-cell, .cu-loading-text {
+  padding: 40px;
+  color: var(--text-muted);
   text-align: center;
-}
-
-.cu-loading-text {
-  text-align: center;
-  color: #64748b;
 }

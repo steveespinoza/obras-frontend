@@ -1,46 +1,81 @@
 /* =========================================
-   TABLAS (Escritorio)
+   TABLAS MINIMALISTAS (Escritorio)
    ========================================= */
-.table-responsive { overflow-x: auto; }
+.table-responsive { 
+  overflow-x: auto; 
+  border-radius: 8px; /* Contenedor sutilmente redondeado */
+}
 
 .table {
-  width: 100%; border-collapse: collapse; margin-top: 10px;
+  width: 100%; 
+  border-collapse: collapse; 
+  margin-top: 10px;
+  background-color: var(--bg-card); /* Blanco puro */
 }
 
+/* Cabecera limpia: Fondo blanco, texto azul oscuro y mayúsculas espaciadas */
 .table th {
-  background-color: #f9fafb; padding: 14px 12px;
-  font-weight: 600; color: var(--text-muted); text-align: left;
-  text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;
+  background-color: var(--bg-card); 
+  padding: 16px 14px;
+  font-weight: 700; 
+  color: var(--text-main); 
+  text-align: left;
+  text-transform: uppercase; 
+  font-size: 11px; 
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--primary); /* Línea inferior fuerte para enmarcar */
 }
 
+/* Filas sin bordes laterales, solo una línea fina horizontal */
 .table td {
-  padding: 14px 12px; border-top: 1px solid #e5e7eb; vertical-align: middle;
+  padding: 18px 14px; /* Más espacio para respirar */
+  border-bottom: 1px solid var(--border-color); /* Línea tenue */
+  vertical-align: middle;
+  color: var(--text-main);
+  font-size: 14px;
 }
 
-.table tr:hover { background-color: #f3f4f6; }
+/* Efecto hover muy sutil */
+.table tr:hover td { 
+  background-color: var(--bg-body); /* Gris azulado ultra claro */
+}
 
 /* =========================================
-   RESPONSIVE TABLAS (Modo Tarjeta)
+   RESPONSIVE TABLAS (Modo Tarjeta Flat)
    ========================================= */
 @media (max-width: 768px) {
   .table thead { display: none; }
   .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
   
   .table tr {
-    margin-bottom: 15px; border: 1px solid var(--border-color);
-    border-radius: 8px; padding: 15px;
-    background-color: var(--bg-card); box-shadow: var(--shadow-sm);
+    margin-bottom: 20px; 
+    border: 1px solid var(--border-color);
+    border-radius: 8px; 
+    padding: 15px;
+    background-color: var(--bg-card); 
+    box-shadow: none; /* Flat design */
   }
   
   .table td {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-top: none; border-bottom: 1px solid #f0f0f0; text-align: right; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 12px 0; 
+    border-top: none; 
+    border-bottom: 1px solid var(--bg-body); 
+    text-align: right; 
   }
   
   .table td:last-child { border-bottom: none; padding-bottom: 0; }
   
   .table td::before {
-    content: attr(data-label); font-weight: bold; color: var(--text-muted);
-    text-transform: uppercase; font-size: 12px; text-align: left; margin-right: 15px;
+    content: attr(data-label); 
+    font-weight: 700; 
+    color: var(--text-muted);
+    text-transform: uppercase; 
+    font-size: 11px; 
+    letter-spacing: 0.5px;
+    text-align: left; 
+    margin-right: 15px;
   }
 }

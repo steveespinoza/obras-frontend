@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Reportes from './pages/Reportes';
 // 1. IMPORTAMOS LA NUEVA PANTALLA
 import CrearUsuario from './pages/CrearUsuario';
+import logoEmpresa from './assets/logoJ&M.jpeg'
 
 function MainApp() {
   const [usuarioActual, setUsuarioActual] = useState(() => {
@@ -50,11 +51,12 @@ function MainApp() {
     <div className="container">
       <header className="header">
         <div className="header-brand">
-          <div className="logo-icon">📦</div>
+          {/* Reemplazamos el emoji por tu imagen */}
+          <img src={logoEmpresa} alt="JyM Grupo Inmobiliario" className="logo-img" />
+          
           <div className="header-info">
-            <h1 className="header-title">
-              Gestión de Inventario
-            </h1>
+            {/* Eliminamos el h1 "Gestión de Inventario" */}
+            
             <div className="user-badge">
               <span className="avatar">{inicialUsuario}</span>
               <span className="user-name">{usuarioActual.name}</span>
