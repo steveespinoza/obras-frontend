@@ -12,7 +12,7 @@ function CrearUsuario() {
   const [loading, setLoading] = useState(false);
   
   // 2. USAMOS EL HOOK
-  const { mostrarNotificacion, ToastComponent } = useToast();
+  const { mostrarNotificacion } = useToast();
   
   const [listaUsuarios, setListaUsuarios] = useState([]);
   const [cargandoUsuarios, setCargandoUsuarios] = useState(true);
@@ -69,7 +69,6 @@ function CrearUsuario() {
   return (
     <div className="card cu-container">
       {/* 3. RENDERIZAMOS EL TOAST */}
-      <ToastComponent />
 
       <div className="list-header">
         <h2 className="cu-title">👤 Gestión de Trabajadores</h2>

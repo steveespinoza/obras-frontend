@@ -13,7 +13,7 @@ function FormularioRequerimiento({ usuarioActual }) {
   const navigate = useNavigate();
   const { id } = useParams(); 
 
-  const { mostrarNotificacion, ToastComponent } = useToast();
+  const { mostrarNotificacion } = useToast(); 
   
   const [loading, setLoading] = useState(false);
   const [cargandoPedidoInicial, setCargandoPedidoInicial] = useState(false);
@@ -140,7 +140,6 @@ function FormularioRequerimiento({ usuarioActual }) {
 
   return (
     <div className="card">
-      <ToastComponent />
 
       <div className="form-header">
         <h2>{id ? `Editando Pedido #${id}` : 'Crear Nuevo Requerimiento'}</h2>

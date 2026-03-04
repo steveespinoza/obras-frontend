@@ -1,30 +1,16 @@
-import { useState } from 'react';
+// src/hooks/useToast.js
+import { useContext } from 'react';
+import { ToastContext } from '../context/ToastContext';
 
 function useToast() {
-  const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: '' });
-
-  const mostrarNotificacion = (mensaje, tipo) => {
-    setToast({ visible: true, mensaje, tipo });
-    
-    // Oculta el toast después de 3 segundos
-    setTimeout(() => {
-      setToast({ visible: false, mensaje: '', tipo: '' });
-    }, 3000);
-  };
-
-  // Creamos un mini-componente interno que ya sabe cómo renderizarse
-  const ToastComponent = () => {
-    if (!toast.visible) return null;
-    
-    return (
-      <div className={`toast-container toast-${toast.tipo}`}>
-        {toast.mensaje}
-      </div>
-    );
-  };
-
-  // El hook devuelve la función para mostrar y el componente para renderizar
-  return { mostrarNotificacion, ToastComponent };
+  const context = useContext(ToastContext);
+  
+  // Buena práctica: avisar si olvidamos envolver la app en el provider
+  if (!context) {
+    throw new Error("useToast debe usarse dentro de un ToastProvider");
+  }
+  
+  return context; // Esto devuelve directamente { mostrarNotificacion }
 }
 
 export default useToast;

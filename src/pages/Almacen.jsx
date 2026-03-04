@@ -14,7 +14,7 @@ function Almacen() {
   const [loading, setLoading] = useState(false);
 
   // 2. USAMOS EL HOOK (¡Mira qué limpio!)
-  const { mostrarNotificacion, ToastComponent } = useToast();
+  const { mostrarNotificacion } = useToast();
 
   useEffect(() => {
     cargarAlmacen();
@@ -81,7 +81,6 @@ function Almacen() {
       />
 
       {/* 3. RENDERIZAMOS EL COMPONENTE DEL HOOK */}
-      <ToastComponent />
 
       <h2>Catálogo de Almacén</h2>
       <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>

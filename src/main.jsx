@@ -10,10 +10,14 @@ import './components/ConfirmModal.css';
 import './pages/VistasListado.css';
 import './pages/Login.css';
 
+import { ToastProvider } from './context/ToastContext.jsx'
+
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <ToastProvider> {/* ENVOLVEMOS LA APP */}
+      <App />
+    </ToastProvider>
   </StrictMode>,
 )
