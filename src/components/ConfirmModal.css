@@ -1,0 +1,19 @@
+/* =========================================
+   MODAL DE CONFIRMACIÓN
+   ========================================= */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000; animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-content {
+  background: var(--bg-card); padding: 30px; border-radius: 12px;
+  box-shadow: var(--shadow-md); max-width: 400px; width: 90%;
+  text-align: center; animation: slideUp 0.3s ease-out;
+}
+
+.modal-content h3 { margin-top: 0; color: var(--text-main); }
+.modal-content p { color: var(--text-muted); margin-bottom: 25px; }
+.modal-actions { display: flex; justify-content: center; gap: 15px; }

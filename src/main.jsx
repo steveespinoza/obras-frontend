@@ -1,7 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-
+import './components/UI/CardsAndButtons.css';
+import './components/Layout.css';
+import './components/UI/Tables.css';
+import './components/UI/Form.css';
+import './components/UI/BadgesAndToasts.css';
+import './components/ConfirmModal.css';
+import './pages/VistasListado.css';
+import './pages/Login.css';
 
 import App from './App.jsx'
 

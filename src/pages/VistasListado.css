@@ -1,0 +1,21 @@
+/* =========================================
+   CABECERAS DE LISTAS Y FILTROS
+   ========================================= */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.actions-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-container {
+  margin-bottom: 20px;
+}

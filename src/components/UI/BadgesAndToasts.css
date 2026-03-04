@@ -1,0 +1,29 @@
+/* =========================================
+   BADGES (Estados)
+   ========================================= */
+.badge {
+  padding: 6px 12px; border-radius: 6px; font-weight: 600;
+  font-size: 13px; display: inline-block; text-align: center;
+}
+
+.select-status {
+  padding: 6px 10px; border-radius: 6px; border: 1px solid transparent;
+  font-weight: 600; font-size: 13px; cursor: pointer; width: 130px;
+}
+.select-status option { background-color: var(--bg-card); color: var(--text-main); font-weight: normal; }
+
+.status-aprobado { background-color: var(--success); color: white; }
+.status-rechazado { background-color: var(--danger); color: white; }
+.status-pendiente { background-color: var(--warning); color: #854d0e; }
+
+/* =========================================
+   TOASTS (Notificaciones)
+   ========================================= */
+.toast-container {
+  position: fixed; bottom: 20px; right: 20px; padding: 15px 25px;
+  border-radius: 8px; color: white; font-weight: 600;
+  box-shadow: var(--shadow-md); z-index: 1050;
+  animation: slideInRight 0.3s ease-out;
+}
+.toast-success { background-color: var(--success); }
+.toast-error { background-color: var(--danger); }

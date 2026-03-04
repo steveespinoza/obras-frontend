@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react';
 import { getAlmacen, createAlmacenItem, deleteAlmacenItem } from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
 
+// 1. IMPORTAMOS NUESTRO CUSTOM HOOK
+import useToast from '../hooks/useToast';
+
 function Almacen() {
   const [materialesBase, setMaterialesBase] = useState([]);
   const [nuevoNombre, setNuevoNombre] = useState('');
 
-  // Estados para Modal y Toast
   const [modalAbierto, setModalAbierto] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
-  const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: '' });
-  
-  // NUEVO: Estado de carga para el botón de agregar
   const [loading, setLoading] = useState(false);
+
+  // 2. USAMOS EL HOOK (¡Mira qué limpio!)
+  const { mostrarNotificacion, ToastComponent } = useToast();
 
   useEffect(() => {
     cargarAlmacen();
@@ -27,13 +29,6 @@ function Almacen() {
     }
   };
 
-  const mostrarNotificacion = (mensaje, tipo) => {
-    setToast({ visible: true, mensaje, tipo });
-    setTimeout(() => {
-      setToast({ visible: false, mensaje: '', tipo: '' });
-    }, 3000);
-  };
-
   const agregarMaterial = async (e) => {
     e.preventDefault();
 
@@ -42,9 +37,9 @@ function Almacen() {
       return;
     }
 
-    if (loading) return; // Protección contra doble click rápido
+    if (loading) return;
 
-    setLoading(true); // Bloqueamos el botón
+    setLoading(true);
 
     try {
       const nuevo = await createAlmacenItem({ name: nuevoNombre });
@@ -54,7 +49,7 @@ function Almacen() {
     } catch (error) {
       mostrarNotificacion("Error al guardar en el almacén", "error");
     } finally {
-      setLoading(false); // Siempre desbloqueamos el botón al terminar, sea éxito o error
+      setLoading(false);
     }
   };
 
@@ -85,11 +80,8 @@ function Almacen() {
         mensaje="¿Estás seguro de eliminar este material base del catálogo?"
       />
 
-      {toast.visible && (
-        <div className={`toast-container toast-${toast.tipo}`}>
-          {toast.mensaje}
-        </div>
-      )}
+      {/* 3. RENDERIZAMOS EL COMPONENTE DEL HOOK */}
+      <ToastComponent />
 
       <h2>Catálogo de Almacén</h2>
       <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>
@@ -106,7 +98,6 @@ function Almacen() {
             required
           />
 
-          {/* MODIFICADO: Aplicamos el disabled y cambiamos el texto dinámicamente */}
           <button type="submit" className="btn btn-success" disabled={loading}>
             {loading ? 'Agregando...' : '+ Agregar'}
           </button>

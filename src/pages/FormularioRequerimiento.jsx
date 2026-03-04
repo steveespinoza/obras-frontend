@@ -1,20 +1,34 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { getAlmacen, createRequerimiento, getRequerimientoById, updateRequerimientoCompleto } from '../services/api';
+import useToast from '../hooks/useToast';
+import './FormularioRequerimiento.css'; 
+
+// IMPORTAMOS NUESTROS NUEVOS COMPONENTES HIJOS
+import RequerimientoForm from '../components/RequerimientoForm';
+import RequerimientoCart from '../components/RequerimientoCart';
 
 function FormularioRequerimiento({ usuarioActual }) {
   const [almacen, setAlmacen] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams(); 
 
-  const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: '' });
+  const { mostrarNotificacion, ToastComponent } = useToast();
+  
   const [loading, setLoading] = useState(false);
   const [cargandoPedidoInicial, setCargandoPedidoInicial] = useState(false);
   
-  const [carrito, setCarrito] = useState([]);
+  const [carrito, setCarrito] = useState(() => {
+  // Si estamos editando un pedido (hay un ID en la URL), empezamos vacío 
+  // porque el useEffect de abajo se encargará de traer los datos de la BD.
+    if (id) return [];
+    
+    // Si es un pedido NUEVO, buscamos si hay un borrador guardado
+    const borrador = localStorage.getItem('carritoBorrador');
+    return borrador ? JSON.parse(borrador) : [];
+  });
   const [editIndex, setEditIndex] = useState(null);
 
-  // MODIFICADO: brand inicia con 'Generico'
   const [formData, setFormData] = useState({
     id: null, 
     name: '', 
@@ -42,6 +56,13 @@ function FormularioRequerimiento({ usuarioActual }) {
     }
   }, [id, navigate]);
 
+  // Auto-guardar el carrito en localStorage (solo para pedidos nuevos)
+  useEffect(() => {
+    if (!id) {
+      localStorage.setItem('carritoBorrador', JSON.stringify(carrito));
+    }
+  }, [carrito, id]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -50,21 +71,13 @@ function FormularioRequerimiento({ usuarioActual }) {
     });
   };
 
-  const mostrarNotificacion = (mensaje, tipo) => {
-    setToast({ visible: true, mensaje, tipo });
-    setTimeout(() => setToast({ visible: false, mensaje: '', tipo: '' }), 3000);
-  };
-
   const procesarFormulario = (e) => {
     e.preventDefault();
-    
-    // MODIFICADO: Ya no exigimos que brand tenga texto en la validación inicial
     if (!formData.name || !formData.quantity) {
       mostrarNotificacion("Completa el nombre y la cantidad del material", "error");
       return;
     }
 
-    // MODIFICADO: Si el usuario borró el texto y lo dejó en blanco, forzamos 'Generico'
     const materialAEnviar = {
       ...formData,
       brand: formData.brand.trim() === '' ? 'Generico' : formData.brand
@@ -78,8 +91,6 @@ function FormularioRequerimiento({ usuarioActual }) {
     } else {
       setCarrito([...carrito, materialAEnviar]);
     }
-    
-    // MODIFICADO: Al limpiar el formulario, vuelve a 'Generico'
     setFormData({ id: null, name: '', brand: 'Generico', quantity: '', unit: 'unidades' });
   };
 
@@ -90,7 +101,6 @@ function FormularioRequerimiento({ usuarioActual }) {
   };
 
   const cancelarEdicion = () => {
-    // MODIFICADO: Al cancelar, vuelve a 'Generico'
     setFormData({ id: null, name: '', brand: 'Generico', quantity: '', unit: 'unidades' });
     setEditIndex(null);
   };
@@ -105,18 +115,17 @@ function FormularioRequerimiento({ usuarioActual }) {
     if (carrito.length === 0) return;
     setLoading(true);
 
-    const datosParaEnviar = {
-      trabajadorId: usuarioActual.id,
-      detalles: carrito 
-    };
-
     try {
+      const datosParaEnviar = { trabajadorId: usuarioActual.id, detalles: carrito };
       if (id) {
         await updateRequerimientoCompleto(id, datosParaEnviar);
         mostrarNotificacion('¡Pedido actualizado con éxito! ✏️', 'success');
       } else {
         await createRequerimiento(datosParaEnviar);
         mostrarNotificacion('¡Requerimiento creado con éxito! 🚀', 'success');
+        
+        // ✨ ¡NUEVO! Borramos el borrador local porque ya se envió a la BD
+        localStorage.removeItem('carritoBorrador');
       }
       setTimeout(() => navigate('/'), 1500);
     } catch (error) {
@@ -131,140 +140,37 @@ function FormularioRequerimiento({ usuarioActual }) {
 
   return (
     <div className="card">
-      {toast.visible && <div className={`toast-container toast-${toast.tipo}`}>{toast.mensaje}</div>}
+      <ToastComponent />
 
       <div className="form-header">
         <h2>{id ? `Editando Pedido #${id}` : 'Crear Nuevo Requerimiento'}</h2>
         <Link to="/">⬅ Volver a la lista</Link>
       </div>
 
-      <form onSubmit={procesarFormulario} className="form-layout" style={{ 
-        padding: '20px', backgroundColor: editIndex !== null ? '#eff6ff' : '#f8fafc',
-        borderRadius: '12px', border: editIndex !== null ? '2px solid #3b82f6' : '1px dashed #cbd5e1',
-        transition: 'all 0.3s'
-      }}>
-        <h4 style={{ marginTop: 0, color: editIndex !== null ? '#1d4ed8' : '#334155', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {editIndex !== null ? '✏️ Modificando material...' : '➕ Agregar material al pedido'}
-        </h4>
-        
-        <input type="text" name="name" list="lista-almacen" placeholder="Escribe para buscar..." value={formData.name} onChange={handleChange} required />
-        <datalist id="lista-almacen">
-          {almacen.map(mat => <option key={mat.id} value={mat.name} />)}
-        </datalist>
-        
-        {/* MODIFICADO: Se quitó el atributo "required" y se actualizó el placeholder */}
-        <input 
-          type="text" 
-          name="brand" 
-          placeholder="Marca (Deja vacío para Genérico)" 
-          value={formData.brand} 
-          onChange={handleChange} 
-        />
-        
-        <div className="form-row">
-          <input type="number" name="quantity" step="0.01" placeholder="Cantidad" value={formData.quantity} onChange={handleChange} required />
-          <select name="unit" value={formData.unit} onChange={handleChange}>
-            <option value="unidades">Unidades</option>
-            <option value="kg">Kilogramos (kg)</option>
-            <option value="m3">Metros Cúbicos (m3)</option>
-            <option value="bolsas">Bolsas</option>
-          </select>
-        </div>
+      {/* 1. USAMOS EL COMPONENTE DEL FORMULARIO */}
+      <RequerimientoForm 
+        formData={formData}
+        editIndex={editIndex}
+        almacen={almacen}
+        onChange={handleChange}
+        onSubmit={procesarFormulario}
+        onCancel={cancelarEdicion}
+      />
 
-        <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-          <button type="submit" className={editIndex !== null ? "btn btn-primary" : "btn btn-success"}>
-            {editIndex !== null ? '💾 Confirmar Cambio' : '+ Añadir a la lista'}
-          </button>
-          {editIndex !== null && <button type="button" className="btn" style={{backgroundColor: '#e2e8f0'}} onClick={cancelarEdicion}>Cancelar</button>}
-        </div>
-      </form>
+      {/* 2. USAMOS EL COMPONENTE DEL CARRITO */}
+      <RequerimientoCart 
+        carrito={carrito}
+        editIndex={editIndex}
+        onEdit={editarDelCarrito}
+        onRemove={quitarDelCarrito}
+      />
 
-      <div style={{ marginTop: '40px' }}>
-        <h4 style={{ color: '#334155', borderBottom: '2px solid #f1f5f9', paddingBottom: '10px', marginBottom: '20px' }}>
-          📦 Materiales en este Pedido <span style={{ backgroundColor: '#2563eb', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '14px', marginLeft: '8px' }}>{carrito.length}</span>
-        </h4>
-        
-        {carrito.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 20px', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-            <p style={{ color: '#64748b', fontSize: '16px', margin: 0 }}>Aún no has agregado materiales a este requerimiento.</p>
-            <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '8px' }}>Usa el formulario de arriba para empezar a añadir.</p>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {carrito.map((item, index) => (
-              <div key={index} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '16px 20px',
-                backgroundColor: editIndex === index ? '#eff6ff' : '#ffffff',
-                border: editIndex === index ? '2px solid #3b82f6' : '1px solid #e2e8f0',
-                borderRadius: '12px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-                transition: 'all 0.2s ease',
-                flexWrap: 'wrap', 
-                gap: '15px'
-              }}>
-                
-                <div style={{ flex: '1 1 250px' }}>
-                  <h5 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0f172a' }}>{item.name}</h5>
-                  <span style={{ fontSize: '13px', color: '#475569', backgroundColor: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', fontWeight: '500' }}>
-                    🏷️ Marca: {item.brand}
-                  </span>
-                </div>
-
-                <div style={{ padding: '0 15px', textAlign: 'center', minWidth: '100px' }}>
-                  <div style={{ fontSize: '20px', fontWeight: '800', color: '#2563eb' }}>{item.quantity}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>{item.unit}</div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button 
-                    type="button" 
-                    onClick={() => editarDelCarrito(index)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '6px',
-                      padding: '8px 14px', borderRadius: '8px',
-                      border: '1px solid #cbd5e1', backgroundColor: '#ffffff',
-                      color: '#475569', fontWeight: '600', cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.color = '#3b82f6'; e.currentTarget.style.backgroundColor = '#eff6ff'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#475569'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
-                  >
-                    ✏️ Editar
-                  </button>
-
-                  <button 
-                    type="button" 
-                    onClick={() => quitarDelCarrito(index)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '6px',
-                      padding: '8px 14px', borderRadius: '8px',
-                      border: 'none', backgroundColor: '#fee2e2',
-                      color: '#b91c1c', fontWeight: '600', cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#fecaca'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#fee2e2'; }}
-                  >
-                    🗑️ Quitar
-                  </button>
-                </div>
-
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div style={{ marginTop: '40px', borderTop: '2px solid #f1f5f9', paddingTop: '25px', display: 'flex', justifyContent: 'flex-end' }}>
+      <div className="req-submit-section">
         <button 
           type="button" 
-          className="btn btn-success" 
+          className="btn btn-success btn-submit-req" 
           onClick={enviarRequerimientoCompleto} 
           disabled={loading || carrito.length === 0 || editIndex !== null}
-          style={{ padding: '14px 28px', fontSize: '16px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(22, 163, 74, 0.2)' }}
         >
           {loading ? 'Procesando...' : id ? '💾 Guardar Pedido Actualizado' : '🚀 Enviar Pedido a Revisión'}
         </button>

@@ -5,6 +5,8 @@ import FormularioRequerimiento from './pages/FormularioRequerimiento';
 import Almacen from './pages/Almacen';
 import Login from './pages/Login';
 import Reportes from './pages/Reportes';
+// 1. IMPORTAMOS LA NUEVA PANTALLA
+import CrearUsuario from './pages/CrearUsuario';
 
 function MainApp() {
   const [usuarioActual, setUsuarioActual] = useState(() => {
@@ -86,9 +88,13 @@ function MainApp() {
                 Catálogo
               </NavLink>
               
-              {/* NUEVO BOTÓN DE REPORTES */}
               <NavLink to="/reportes" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
                 Reportes
+              </NavLink>
+
+              {/* 2. NUEVO ENLACE EN EL MENÚ PARA CREAR USUARIOS */}
+              <NavLink to="/usuarios/nuevo" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                + Usuario
               </NavLink>
             </>
           )}
@@ -106,7 +112,6 @@ function MainApp() {
           {!usuarioActual.isAdmin && (
             <>
               <Route path="/nuevo" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
-              {/* NUEVA RUTA PARA EDITAR EL PEDIDO COMPLETO */}
               <Route path="/editar/:id" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
             </>
           )}
@@ -114,8 +119,9 @@ function MainApp() {
           {usuarioActual.isAdmin && (
             <>
               <Route path="/almacen" element={<Almacen />} />
-              {/* NUEVA RUTA DE REPORTES */}
               <Route path="/reportes" element={<Reportes />} />
+              {/* 3. NUEVA RUTA PARA RENDERIZAR EL FORMULARIO */}
+              <Route path="/usuarios/nuevo" element={<CrearUsuario />} />
             </>
           )}
         </Routes>

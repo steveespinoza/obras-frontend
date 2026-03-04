@@ -96,9 +96,29 @@ export const getReporteMaterial = async (material, inicio, fin) => {
 // 📦 ALMACÉN
 // =========================
 
+// =========================
+// 📦 ALMACÉN
+// =========================
+
 export const getAlmacen = async () => {
+  // 1. Revisamos si ya tenemos el catálogo guardado en esta sesión
+  const catalogoGuardado = sessionStorage.getItem('catalogoAlmacen');
+  
+  if (catalogoGuardado) {
+    // Si existe, lo devolvemos inmediatamente sin llamar al servidor
+    return JSON.parse(catalogoGuardado);
+  }
+
+  // 2. Si no existe, hacemos la petición normal al servidor
   const res = await fetch(`${API_URL}/almacen`, { headers: getAuthHeaders() });
-  return handleResponse(res);
+  const data = await handleResponse(res);
+
+  // 3. Antes de devolver los datos, los guardamos para la próxima vez
+  if (data) {
+    sessionStorage.setItem('catalogoAlmacen', JSON.stringify(data));
+  }
+
+  return data;
 };
 
 export const createAlmacenItem = async (data) => {
@@ -107,6 +127,10 @@ export const createAlmacenItem = async (data) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
+  
+  // 🧹 Borramos el caché porque el catálogo cambió
+  sessionStorage.removeItem('catalogoAlmacen');
+  
   return handleResponse(res);
 };
 
@@ -115,9 +139,12 @@ export const deleteAlmacenItem = async (id) => {
     method: "DELETE",
     headers: getAuthHeaders(),
   });
+  
+  // 🧹 Borramos el caché porque el catálogo cambió
+  sessionStorage.removeItem('catalogoAlmacen');
+  
   return handleResponse(res);
 };
-
 // =========================
 // 👤 USUARIOS (Login)
 // =========================
@@ -134,4 +161,20 @@ export const loginUser = async (credentials) => {
     throw new Error(errorData.message || "Usuario o contraseña incorrectos");
   }
   return res.json();
+};
+
+
+// Llamada para registrar un nuevo usuario
+export const registerUser = async (userData) => {
+  const res = await fetch(`${API_URL}/users/registro`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(userData),
+  });
+  return handleResponse(res);
+};
+
+export const getUsuarios = async () => {
+  const res = await fetch(`${API_URL}/users`, { headers: getAuthHeaders() });
+  return handleResponse(res);
 };

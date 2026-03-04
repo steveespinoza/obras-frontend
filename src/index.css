@@ -1,18 +1,18 @@
 /* =========================================
-   1. VARIABLES Y BASE (Diseño Moderno)
+   1. VARIABLES GLOBALES (Diseño Moderno)
    ========================================= */
 :root {
   --bg-body: #f4f6f9;
   --bg-card: #ffffff;
-  --bg-header-dark: #1e293b; /* NUEVO: Fondo oscuro premium para el Header */
+  --bg-header-dark: #1e293b;
   
   --text-main: #1f2937;
   --text-muted: #6b7280;
-  --text-header: #ffffff;    /* NUEVO: Texto claro para el header oscuro */
+  --text-header: #ffffff;
   
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
-  --primary-bright: #60a5fa; /* NUEVO: Azul brillante para active en fondo oscuro */
+  --primary-bright: #60a5fa;
   --primary-light: #eff6ff; 
   --success: #16a34a;
   --danger: #dc2626;
@@ -23,6 +23,9 @@
   --shadow-md: 0 6px 15px rgba(0,0,0,0.08);
 }
 
+/* =========================================
+   2. RESET Y BASE
+   ========================================= */
 * {
   box-sizing: border-box;
 }
@@ -35,528 +38,40 @@ body {
   line-height: 1.5;
 }
 
-/* Contenedor principal del Dashboard */
+/* =========================================
+   3. ESTRUCTURA PRINCIPAL (Contenedores)
+   ========================================= */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 30px 20px;
 }
 
-/* =========================================
-   2. COMPONENTES GLOBALES (Tarjetas y Botones)
-   ========================================= */
-.card {
-  background: var(--bg-card);
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  margin-bottom: 20px;
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn:hover {
-  opacity: 0.85;
-  transform: translateY(-1px);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-primary { background-color: var(--primary); color: white; }
-.btn-success { background-color: var(--success); color: white; }
-.btn-danger { background-color: var(--danger); color: white; }
-
-/* Botón fantasma/bordeado para el "Salir" del Header OSCURO */
-.btn-outline-danger {
-  background-color: transparent;
-  color: var(--text-header); /* Blanco por defecto */
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-.btn-outline-danger:hover {
-  background-color: var(--danger);
-  border-color: var(--danger);
-  color: white;
-  opacity: 1;
-}
-
-/* =========================================
-   3. FORMULARIOS (Inputs y Selects)
-   ========================================= */
-input, select {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  width: 100%;
-  font-family: inherit;
-  font-size: 15px;
-  transition: border-color 0.2s;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-/* =========================================
-   4. HEADER PREMIUM OSCURO (Contrasta con el resto)
-   ========================================= */
-.header {
-  background: var(--bg-header-dark); /* NUEVO: Fondo oscuro */
-  padding: 15px 25px;
-  border-radius: 16px;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  border: 1px solid rgba(255,255,255,0.05); /* Borde suave */
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.logo-icon {
-  font-size: 2rem;
-  background: rgba(255,255,255,0.05); /* Fondo suave */
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-}
-
-.header-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.header-title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-header); /* NUEVO: Texto blanco */
-  letter-spacing: -0.5px;
-}
-
-/* =========================================
-   4.1 PERFIL DE USUARIO EN EL HEADER OSCURO
-   ========================================= */
-.user-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.7); /* Texto blanco tenue */
-}
-
-.avatar {
-  background-color: var(--text-header);
-  color: var(--bg-header-dark); /* Contraste inverso */
-  font-weight: bold;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 0.7rem;
-}
-
-.user-name {
-  font-weight: 600;
-  color: var(--text-header); /* NUEVO: Texto blanco */
-}
-
-.role-tag {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Colores de roles adaptados a fondo oscuro */
-.role-admin {
-  background-color: #fef3c7; 
-  color: #b45309; 
-}
-
-.role-user {
-  background-color: #e0e7ff; 
-  color: #4338ca;
-}
-
-/* =========================================
-   4.2 NAVEGACIÓN TIPO PÍLDORAS EN FONDO OSCURO
-   ========================================= */
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.nav-item {
-  text-decoration: none;
-  font-weight: 500;
-  color: rgba(255,255,255,0.7); /* Blanco tenue */
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
-}
-
-.nav-item:hover {
-  background-color: rgba(255,255,255,0.05); /* Hover suave */
-  color: var(--text-header);
-}
-
-.nav-item.active {
-  background-color: var(--primary-bright); /* Azul brillante para destacar */
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* =========================================
-   5. CONTENIDO PRINCIPAL (Mantiene fondo claro)
-   ========================================= */
 .main-content {
   background-color: var(--bg-body);
 }
 
-/* ... (El resto del CSS se mantiene igual) ... */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background-color: var(--bg-body);
-}
-
-.login-card {
-  background: var(--bg-card);
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.login-card h2 {
-  margin-top: 0;
-  margin-bottom: 25px;
-  color: var(--text-main);
-}
-
-.login-card form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.error-box {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px solid #f87171;
-  font-size: 14px;
-  font-weight: 500;
+/* =========================================
+   4. UTILIDADES GLOBALES
+   ========================================= */
+.text-center { 
+  text-align: center; 
 }
 
 /* =========================================
-   6. TABLAS (Diseño de escritorio)
+   5. ANIMACIONES GLOBALES
    ========================================= */
-.table-responsive {
-  overflow-x: auto;
+@keyframes fadeIn { 
+  from { opacity: 0; } 
+  to { opacity: 1; } 
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+@keyframes slideUp { 
+  from { transform: translateY(20px); opacity: 0; } 
+  to { transform: translateY(0); opacity: 1; } 
 }
 
-.table th {
-  background-color: #f9fafb;
-  padding: 14px 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-align: left;
-  text-transform: uppercase;
-  font-size: 12px;
-  letter-spacing: 0.5px;
+@keyframes slideInRight { 
+  from { transform: translateX(100%); opacity: 0; } 
+  to { transform: translateX(0); opacity: 1; } 
 }
-
-.table td {
-  padding: 14px 12px;
-  border-top: 1px solid #e5e7eb;
-  vertical-align: middle;
-}
-
-.table tr:hover {
-  background-color: #f3f4f6;
-}
-
-/* =========================================
-   7. RESPONSIVE (Móvil y Tablas Tipo Tarjeta)
-   ========================================= */
-@media (max-width: 768px) {
-  /* Apilar el header en móvil */
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
-  }
-
-  .header-brand {
-    justify-content: center;
-    text-align: center;
-  }
-
-  .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-    gap: 10px;
-  }
-  
-  .nav-item {
-    flex: 1 1 calc(50% - 10px); /* Dos botones por fila en móvil */
-    text-align: center;
-  }
-
-  .nav-links .btn {
-    width: 100%; /* Botón de salir ocupa toda la fila en móvil */
-  }
-
-  /* Truco de Tablas Responsivas (Modo Tarjeta) */
-  .table thead {
-    display: none;
-  }
-
-  .table, .table tbody, .table tr, .table td {
-    display: block;
-    width: 100%;
-  }
-
-  .table tr {
-    margin-bottom: 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 15px;
-    background-color: var(--bg-card);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-top: none;
-    border-bottom: 1px solid #f0f0f0;
-    text-align: right; 
-  }
-
-  .table td:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .table td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-size: 12px;
-    text-align: left;
-    margin-right: 15px;
-  }
-}
-
-/* =========================================
-   8. UTILIDADES DE FORMULARIOS (Layout)
-   ========================================= */
-.form-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.form-header a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.form-header a:hover {
-  color: var(--primary-hover);
-  text-decoration: underline;
-}
-
-.form-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.form-row {
-  display: flex;
-  gap: 15px;
-}
-
-.info-box {
-  background-color: #f8fafc;
-  padding: 12px 15px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-/* En móviles, los campos que están en fila se apilan */
-@media (max-width: 768px) {
-  .form-row {
-    flex-direction: column;
-    gap: 15px;
-  }
-}
-
-/* =========================================
-   9. LISTAS Y ESTADOS (Badges)
-   ========================================= */
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.actions-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.search-container {
-  margin-bottom: 20px;
-}
-
-/* Base para el texto de estado (Usuario) */
-.badge {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 13px;
-  display: inline-block;
-  text-align: center;
-}
-
-/* Base para el selector de estado (Administrador) */
-.select-status {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  width: 130px;
-}
-
-.select-status option {
-  background-color: var(--bg-card);
-  color: var(--text-main);
-  font-weight: normal;
-}
-
-/* Clases de colores dinámicos */
-.status-aprobado { background-color: var(--success); color: white; }
-.status-rechazado { background-color: var(--danger); color: white; }
-.status-pendiente { background-color: var(--warning); color: #854d0e; }
-
-/* Utilidad para centrar texto */
-.text-center { text-align: center; }
-
-/* =========================================
-   10. MODAL DE CONFIRMACIÓN
-   ========================================= */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-.modal-content {
-  background: var(--bg-card);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  animation: slideUp 0.3s ease-out;
-}
-
-.modal-content h3 { margin-top: 0; color: var(--text-main); }
-.modal-content p { color: var(--text-muted); margin-bottom: 25px; }
-.modal-actions { display: flex; justify-content: center; gap: 15px; }
-
-/* =========================================
-   11. NOTIFICACIONES (TOAST)
-   ========================================= */
-.toast-container {
-  position: fixed;
-  bottom: 20px; right: 20px;
-  padding: 15px 25px;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-  box-shadow: var(--shadow-md);
-  z-index: 1050;
-  animation: slideInRight 0.3s ease-out;
-}
-
-.toast-success { background-color: var(--success); }
-.toast-error { background-color: var(--danger); }
-
-/* Animaciones */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-

@@ -1,0 +1,79 @@
+/* =========================================
+   HEADER PREMIUM OSCURO
+   ========================================= */
+.header {
+  background: var(--bg-header-dark);
+  padding: 15px 25px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.header-brand { display: flex; align-items: center; gap: 15px; }
+
+.logo-icon {
+  font-size: 2rem;
+  background: rgba(255,255,255,0.05);
+  width: 45px; height: 45px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+}
+
+.header-info { display: flex; flex-direction: column; gap: 2px; }
+.header-title {
+  margin: 0; font-size: 1.25rem; font-weight: 700;
+  color: var(--text-header); letter-spacing: -0.5px;
+}
+
+/* =========================================
+   PERFIL DE USUARIO
+   ========================================= */
+.user-badge {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.85rem; color: rgba(255,255,255,0.7);
+}
+
+.avatar {
+  background-color: var(--text-header); color: var(--bg-header-dark);
+  font-weight: bold; width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; font-size: 0.7rem;
+}
+
+.user-name { font-weight: 600; color: var(--text-header); }
+.role-tag {
+  padding: 2px 8px; border-radius: 12px; font-size: 0.7rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.role-admin { background-color: #fef3c7; color: #b45309; }
+.role-user { background-color: #e0e7ff; color: #4338ca; }
+
+/* =========================================
+   NAVEGACIÓN TIPO PÍLDORAS
+   ========================================= */
+.nav-links { display: flex; align-items: center; gap: 8px; }
+.nav-item {
+  text-decoration: none; font-weight: 500;
+  color: rgba(255,255,255,0.7); padding: 8px 16px;
+  border-radius: 8px; transition: all 0.2s ease; font-size: 0.95rem;
+}
+.nav-item:hover { background-color: rgba(255,255,255,0.05); color: var(--text-header); }
+.nav-item.active {
+  background-color: var(--primary-bright); color: white;
+  font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* =========================================
+   RESPONSIVE HEADER
+   ========================================= */
+@media (max-width: 768px) {
+  .header { flex-direction: column; align-items: stretch; gap: 20px; }
+  .header-brand { justify-content: center; text-align: center; }
+  .nav-links { flex-wrap: wrap; justify-content: center; width: 100%; gap: 10px; }
+  .nav-item { flex: 1 1 calc(50% - 10px); text-align: center; }
+  .nav-links .btn { width: 100%; }
+}

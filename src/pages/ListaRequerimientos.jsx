@@ -4,6 +4,9 @@ import { getRequerimientos, deleteRequerimiento, updateEstadoRequerimiento, getR
 import * as XLSX from 'xlsx';
 import ConfirmModal from '../components/ConfirmModal';
 
+// IMPORTAMOS NUESTRO NUEVO CSS
+import './ListaRequerimientos.css';
+
 function ListaRequerimientos({ usuarioActual = {} }) {
   const [requerimientos, setRequerimientos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -11,7 +14,6 @@ function ListaRequerimientos({ usuarioActual = {} }) {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
 
-  // Estados para el Modal de Detalles
   const [modalDetallesAbierto, setModalDetallesAbierto] = useState(false);
   const [detallesActuales, setDetallesActuales] = useState(null);
   const [cargandoDetalles, setCargandoDetalles] = useState(false);
@@ -88,15 +90,10 @@ function ListaRequerimientos({ usuarioActual = {} }) {
     );
   }
 
-// NUEVO: Función para formatear la fecha Y la hora corrigiendo la zona horaria (UTC-5 para Perú)
   const formatearFechaHora = (fechaIso) => {
     if (!fechaIso) return "";
     
-    // TRUCO: Si SQLite nos manda la fecha sin la 'Z' de UTC, se la agregamos manualmente.
-    // Esto fuerza a JavaScript a entender que son las 7:21 PM de Londres, 
-    // y lo convertirá automáticamente a las 2:21 PM de Perú.
     const fechaUTC = fechaIso.endsWith('Z') ? fechaIso : `${fechaIso}Z`;
-    
     const fecha = new Date(fechaUTC);
     
     return fecha.toLocaleString('es-PE', { 
@@ -143,24 +140,24 @@ function ListaRequerimientos({ usuarioActual = {} }) {
       {/* Modal de Detalles */}
       {modalDetallesAbierto && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '600px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-              <h3 style={{ margin: 0 }}>📦 Detalles del Pedido #{detallesActuales?.id}</h3>
-              <button className="btn" style={{ backgroundColor: '#e5e7eb', color: '#374151' }} onClick={cerrarDetalles}>Cerrar</button>
+          <div className="modal-content modal-content-lg">
+            <div className="modal-header">
+              <h3 className="modal-title">📦 Detalles del Pedido #{detallesActuales?.id}</h3>
+              <button className="btn btn-close-modal" onClick={cerrarDetalles}>Cerrar</button>
             </div>
             
             {cargandoDetalles ? (
               <p>Cargando materiales...</p>
             ) : detallesActuales ? (
               <>
-                <div className="info-box" style={{ textAlign: 'left', marginBottom: '15px' }}>
-                  <p style={{ margin: '5px 0' }}><strong>Responsable:</strong> {detallesActuales.trabajador}</p>
-                  <p style={{ margin: '5px 0' }}><strong>Fecha y Hora:</strong> {formatearFechaHora(detallesActuales.fechaSolicitud)}</p>
-                  <p style={{ margin: '5px 0' }}><strong>Estado:</strong> <span className={`badge ${getStatusClass(detallesActuales.estado)}`}>{detallesActuales.estado}</span></p>
+                <div className="info-box info-box-left">
+                  <p className="info-text"><strong>Responsable:</strong> {detallesActuales.trabajador}</p>
+                  <p className="info-text"><strong>Fecha y Hora:</strong> {formatearFechaHora(detallesActuales.fechaSolicitud)}</p>
+                  <p className="info-text"><strong>Estado:</strong> <span className={`badge ${getStatusClass(detallesActuales.estado)}`}>{detallesActuales.estado}</span></p>
                 </div>
                 
                 <div className="table-responsive">
-                  <table className="table" style={{ textAlign: 'left' }}>
+                  <table className="table table-left">
                     <thead>
                       <tr>
                         <th>Material</th>
@@ -188,7 +185,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
       )}
 
       <div className="list-header">
-        <h2 style={{ margin: 0 }}>{isAdmin ? "Todos los Pedidos" : "Mis Pedidos"}</h2>
+        <h2 className="title-no-margin">{isAdmin ? "Todos los Pedidos" : "Mis Pedidos"}</h2>
 
         <div className="actions-group">
           {isAdmin && (
@@ -233,7 +230,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
                 <td data-label="ID Pedido">#{req.id}</td>
                 <td data-label="Fecha y Hora">{formatearFechaHora(req.fechaSolicitud)}</td>
                 <td data-label="Artículos">
-                  <span style={{ fontWeight: 'bold', color: '#2563eb' }}>{req.cantidadMaterialesDiferentes} items</span>
+                  <span className="items-count">{req.cantidadMaterialesDiferentes} items</span>
                 </td>
                 
                 <td data-label="Estado">
@@ -257,15 +254,13 @@ function ListaRequerimientos({ usuarioActual = {} }) {
                 {isAdmin && <td data-label="Responsable">{req.trabajador}</td>}
                 {isAdmin && <td data-label="Especialidad">{req.especialidad}</td>}
                 
-                <td data-label="Acciones" style={{ display: 'flex', gap: '8px' }}>
-                  {/* MODIFICADO: Botón VER ahora es Amarillo con texto oscuro para buen contraste */}
-                  <button className="btn" style={{ backgroundColor: '#eab308', color: '#ffffff' }} onClick={() => verDetalles(req.id)}>
+                <td data-label="Acciones" className="actions-cell">
+                  <button className="btn btn-view" onClick={() => verDetalles(req.id)}>
                     👁️ Ver
                   </button>
 
-                  {/* MODIFICADO: Botón EDITAR ahora es Azul */}
                   {!isAdmin && req.estado === "Pendiente" && (
-                    <Link to={`/editar/${req.id}`} className="btn" style={{ backgroundColor: '#3b82f6', color: 'white', textDecoration: 'none' }}>
+                    <Link to={`/editar/${req.id}`} className="btn btn-edit">
                       ✏️ Editar
                     </Link>
                   )}
