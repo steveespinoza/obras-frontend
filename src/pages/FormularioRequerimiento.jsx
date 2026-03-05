@@ -19,12 +19,13 @@ function FormularioRequerimiento({ usuarioActual }) {
   const [cargandoPedidoInicial, setCargandoPedidoInicial] = useState(false);
   
   const [carrito, setCarrito] = useState(() => {
-  // Si estamos editando un pedido (hay un ID en la URL), empezamos vacío 
-  // porque el useEffect de abajo se encargará de traer los datos de la BD.
+    // Si estamos editando un pedido (hay un ID en la URL), empezamos vacío 
     if (id) return [];
     
-    // Si es un pedido NUEVO, buscamos si hay un borrador guardado
-    const borrador = localStorage.getItem('carritoBorrador');
+    // 👇 Usamos una clave única con el ID del usuario
+    const keyLocal = `carritoBorrador_${usuarioActual.id}`;
+    const borrador = localStorage.getItem(keyLocal);
+    
     return borrador ? JSON.parse(borrador) : [];
   });
   const [editIndex, setEditIndex] = useState(null);
@@ -56,12 +57,14 @@ function FormularioRequerimiento({ usuarioActual }) {
     }
   }, [id, navigate]);
 
-  // Auto-guardar el carrito en localStorage (solo para pedidos nuevos)
+// Auto-guardar el carrito en localStorage (solo para pedidos nuevos)
   useEffect(() => {
-    if (!id) {
-      localStorage.setItem('carritoBorrador', JSON.stringify(carrito));
+    if (!id && usuarioActual?.id) {
+      // 👇 Guardamos en la clave única del usuario
+      const keyLocal = `carritoBorrador_${usuarioActual.id}`;
+      localStorage.setItem(keyLocal, JSON.stringify(carrito));
     }
-  }, [carrito, id]);
+  }, [carrito, id, usuarioActual]); // Añadimos usuarioActual a las dependencias
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,8 +127,9 @@ function FormularioRequerimiento({ usuarioActual }) {
         await createRequerimiento(datosParaEnviar);
         mostrarNotificacion('¡Requerimiento creado con éxito! 🚀', 'success');
         
-        // ✨ ¡NUEVO! Borramos el borrador local porque ya se envió a la BD
-        localStorage.removeItem('carritoBorrador');
+        // 👇 Borramos el borrador local específico del usuario
+        const keyLocal = `carritoBorrador_${usuarioActual.id}`;
+        localStorage.removeItem(keyLocal);
       }
       setTimeout(() => navigate('/'), 1500);
     } catch (error) {

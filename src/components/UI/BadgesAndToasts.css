@@ -78,3 +78,10 @@
   color: white; 
   border-left: 4px solid var(--danger); /* Franja roja lateral */
 }
+
+.role-admin {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  font-weight: 600;
+}

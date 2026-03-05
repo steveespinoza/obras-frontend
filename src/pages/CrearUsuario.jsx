@@ -1,41 +1,62 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser, getUsuarios } from '../services/api';
+// ¡NUEVO!: Importamos getProyectos
+import { registerUser, getUsuarios, getProyectos } from '../services/api';
 import './CrearUsuario.css';
 import './VistasListado.css';
 
-// 1. IMPORTAMOS EL CUSTOM HOOK
 import useToast from '../hooks/useToast';
 
 function CrearUsuario() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
-  // 2. USAMOS EL HOOK
   const { mostrarNotificacion } = useToast();
   
   const [listaUsuarios, setListaUsuarios] = useState([]);
   const [cargandoUsuarios, setCargandoUsuarios] = useState(true);
+  
+  // ¡NUEVO!: Estado para los proyectos
+  const [listaProyectos, setListaProyectos] = useState([]);
 
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
     username: '',
     password: '',
-    especialidad: 'Construcción',
-    telefono: ''
+    especialidad: 'Administración', // <-- Forzado a Administración
+    telefono: '',
+    proyectoId: '' 
   });
 
   useEffect(() => {
-    cargarUsuarios();
+    cargarDatosIniciales();
   }, []);
 
-  const cargarUsuarios = async () => {
+  const cargarDatosIniciales = async () => {
     try {
-      const data = await getUsuarios();
-      setListaUsuarios(Array.isArray(data) ? data : []);
+      const [usuariosData, proyectosData] = await Promise.all([
+        getUsuarios(),
+        getProyectos() // Traemos los proyectos en paralelo
+      ]);
+      
+      // ==========================================
+      // ¡AQUÍ APLICAMOS EL FILTRO!
+      // Nos quedamos SOLO con los usuarios cuya especialidad sea "Administración"
+      // ==========================================
+      const soloAdmins = (Array.isArray(usuariosData) ? usuariosData : [])
+        .filter(user => user.especialidad === 'Administración');
+
+      // Guardamos la lista filtrada en lugar de la lista completa
+      setListaUsuarios(soloAdmins); 
+      
+      setListaProyectos(Array.isArray(proyectosData) ? proyectosData : []);
+      
+      // Si hay proyectos, seleccionamos el primero por defecto
+      if (proyectosData && proyectosData.length > 0) {
+        setFormData(prev => ({ ...prev, proyectoId: proyectosData[0].id }));
+      }
     } catch (error) {
-      console.error("Error al obtener usuarios", error);
+      console.error("Error al obtener datos iniciales", error);
     } finally {
       setCargandoUsuarios(false);
     }
@@ -45,38 +66,51 @@ function CrearUsuario() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.proyectoId) {
+      mostrarNotificacion("Debes seleccionar un proyecto para este usuario", "error");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await registerUser(formData);
-      mostrarNotificacion('¡Usuario creado con éxito! 🏗️', 'success');
+      // Convertimos el ID a número antes de enviarlo
+      const datosParaEnviar = { ...formData, proyectoId: Number(formData.proyectoId) };
+      await registerUser(datosParaEnviar);
+      
+      mostrarNotificacion('¡Admin creado con éxito! 🏗️', 'success');
       
       setFormData({
-        nombre: '', apellido: '', username: '', password: '', especialidad: 'Construcción', telefono: ''
+        nombre: '', apellido: '', username: '', password: '', especialidad: 'Administración', telefono: '',
+        proyectoId: listaProyectos.length > 0 ? listaProyectos[0].id : ''
       });
 
-      await cargarUsuarios();
+      // ==========================================
+      // ¡AQUÍ ESTÁ LA CORRECCIÓN!
+      // En lugar de hacer getUsuarios() sin filtrar,
+      // llamamos a la función maestra que ya tiene el filtro.
+      // ==========================================
+      await cargarDatosIniciales();
       
     } catch (error) {
-      mostrarNotificacion(error.message || 'Error al crear el usuario', 'error');
+      mostrarNotificacion(error.message || 'Error al crear el admin', 'error');
     } finally {
       setLoading(false);
     }
   };
-
+// Filtramos: Solo obras que NO tienen Admin asignado
+  const proyectosDisponibles = listaProyectos.filter(p => p.adminId === null);
   return (
     <div className="card cu-container">
-      {/* 3. RENDERIZAMOS EL TOAST */}
-
       <div className="list-header">
         <h2 className="cu-title">👤 Gestión de Trabajadores</h2>
       </div>
 
-      {/* SECCIÓN 1: FORMULARIO DE REGISTRO */}
       <form onSubmit={handleSubmit} className="cu-form-section">
-        <h4 className="cu-section-title">Registrar Nuevo Usuario</h4>
+        <h4 className="cu-section-title">Registrar Nuevo Admin</h4>
         
         <div className="cu-form-row">
           <div className="cu-form-group">
@@ -91,7 +125,7 @@ function CrearUsuario() {
 
         <div className="cu-form-row">
           <div className="cu-form-group">
-            <label className="cu-label">Usuario (Login)</label>
+            <label className="cu-label">Admin (Login)</label>
             <input type="text" name="username" value={formData.username} onChange={handleChange} required placeholder="Ej. jperez" />
           </div>
           <div className="cu-form-group">
@@ -103,13 +137,14 @@ function CrearUsuario() {
         <div className="cu-form-row">
           <div className="cu-form-group">
             <label className="cu-label">Especialidad / Rol</label>
-            <select name="especialidad" value={formData.especialidad} onChange={handleChange}>
-              <option value="Construcción">Construcción</option>
-              <option value="Administración">Administración</option>
-              <option value="Almacén">Almacén</option>
-              <option value="Electricidad">Electricidad</option>
-              <option value="Gasfitería">Gasfitería</option>
-            </select>
+            {/* Lo cambiamos por un input bloqueado para que el Jefe lo tenga claro */}
+            <input 
+              type="text" 
+              name="especialidad" 
+              value="Administración" 
+              disabled 
+              style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed', color: '#6b7280' }}
+            />
           </div>
           <div className="cu-form-group">
             <label className="cu-label">Teléfono</label>
@@ -117,51 +152,68 @@ function CrearUsuario() {
           </div>
         </div>
 
+        {/* ¡NUEVO!: Fila para seleccionar el Proyecto */}
+        <div className="cu-form-row">
+          <div className="cu-form-group" style={{ width: '100%' }}>
+            <label className="cu-label">Asignar a una Obra Disponible</label>
+            <select name="proyectoId" value={formData.proyectoId} onChange={handleChange}>
+              <option value="">-- Sin asignar / Asignar más adelante --</option>
+              {/* Usamos nuestra nueva lista filtrada */}
+              {proyectosDisponibles.map(p => (
+                <option key={p.id} value={p.id}>
+                  {p.nombre} ({p.ubicacion})
+                </option>
+              ))}
+            </select>
+            {/* Pequeña ayuda visual si ya no hay obras libres */}
+            {proyectosDisponibles.length === 0 && listaProyectos.length > 0 && (
+              <small style={{ color: '#ef4444', marginTop: '5px', display: 'block' }}>
+                *Todas las obras actuales ya tienen un Administrador asignado.
+              </small>
+            )}
+          </div>
+        </div>
+
         <div className="cu-form-actions">
           <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>
             Volver al Inicio
           </button>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Guardando...' : '💾 Registrar Usuario'}
+          <button type="submit" className="btn btn-primary" disabled={loading || listaProyectos.length === 0}>
+            {loading ? 'Guardando...' : '💾 Registrar Admin'}
           </button>
         </div>
       </form>
 
-      {/* SECCIÓN 2: TABLA DE USUARIOS EXISTENTES */}
+      {/* TABLA DE USUARIOS EXISTENTES */}
       <div className="cu-table-section">
-        <h3 className="cu-section-title">📋 Usuarios Registrados ({listaUsuarios.length})</h3>
+        <h3 className="cu-section-title">📋 Admins Registrados ({listaUsuarios.length})</h3>
         
         {cargandoUsuarios ? (
-          <p className="cu-loading-text">Cargando usuarios... ⏳</p>
+          <p className="cu-loading-text">Cargando Admin... ⏳</p>
         ) : (
           <div className="table-responsive cu-table-wrapper">
             <table className="table" style={{ margin: 0 }}>
               <thead className="cu-thead">
                 <tr>
                   <th>Nombre Completo</th>
-                  <th>Usuario (Login)</th>
+                  <th>Admin</th>
                   <th>Especialidad</th>
-                  <th>Teléfono</th>
+                  <th>Proyecto / Obra</th> {/* Nueva columna */}
                 </tr>
               </thead>
               <tbody>
                 {listaUsuarios.map(user => (
                   <tr key={user.id} className="cu-tbody-tr">
                     <td data-label="Nombre Completo"><strong>{user.nombreCompleto}</strong></td>
-                    <td data-label="Usuario">
-                      <span className="cu-username-badge">
-                        {user.username}
-                      </span>
-                    </td>
+                    <td data-label="Usuario"><span className="cu-username-badge">{user.username}</span></td>
                     <td data-label="Especialidad">{user.especialidad}</td>
-                    <td data-label="Teléfono">{user.telefono || '-'}</td>
+                    {/* Mostramos a qué proyecto pertenece */}
+                    <td data-label="Proyecto">{user.proyectoNombre || `ID: ${user.proyectoId}`}</td>
                   </tr>
                 ))}
                 {listaUsuarios.length === 0 && (
                   <tr>
-                    <td colSpan="4" className="cu-empty-cell">
-                      No hay usuarios registrados.
-                    </td>
+                    <td colSpan="4" className="cu-empty-cell">No hay admins registrados.</td>
                   </tr>
                 )}
               </tbody>
