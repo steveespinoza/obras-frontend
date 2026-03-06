@@ -198,7 +198,7 @@ const handleSubmit = async (e) => {
                   <th>Nombre Completo</th>
                   <th>Admin</th>
                   <th>Especialidad</th>
-                  <th>Proyecto / Obra</th> {/* Nueva columna */}
+                  <th>Proyecto / Obra</th> 
                 </tr>
               </thead>
               <tbody>

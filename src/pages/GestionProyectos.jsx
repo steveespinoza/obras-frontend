@@ -96,7 +96,7 @@ const [formData, setFormData] = useState({
 
         <div className="cu-form-actions">
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Guardando...' : '🏗️ Crear Obra'}
+            {loading ? 'Guardando...' : 'Crear Obra'}
           </button>
         </div>
       </form>
