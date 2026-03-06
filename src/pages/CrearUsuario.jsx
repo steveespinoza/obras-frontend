@@ -51,10 +51,7 @@ function CrearUsuario() {
       
       setListaProyectos(Array.isArray(proyectosData) ? proyectosData : []);
       
-      // Si hay proyectos, seleccionamos el primero por defecto
-      if (proyectosData && proyectosData.length > 0) {
-        setFormData(prev => ({ ...prev, proyectoId: proyectosData[0].id }));
-      }
+
     } catch (error) {
       console.error("Error al obtener datos iniciales", error);
     } finally {
@@ -66,33 +63,30 @@ function CrearUsuario() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.proyectoId) {
-      mostrarNotificacion("Debes seleccionar un proyecto para este usuario", "error");
-      return;
-    }
+    // ELIMINAMOS la validación if (!formData.proyectoId) para permitir admins sin obra
 
     setLoading(true);
 
     try {
-      // Convertimos el ID a número antes de enviarlo
-      const datosParaEnviar = { ...formData, proyectoId: Number(formData.proyectoId) };
+      // ¡CORRECCIÓN AQUÍ!: Si hay un proyectoId, lo convertimos a Número. Si está vacío (""), enviamos null.
+      const datosParaEnviar = { 
+        ...formData, 
+        proyectoId: formData.proyectoId ? Number(formData.proyectoId) : null 
+      };
+      
       await registerUser(datosParaEnviar);
       
       mostrarNotificacion('¡Admin creado con éxito! 🏗️', 'success');
       
+      // Limpiamos el formulario dejándolo sin asignar
       setFormData({
         nombre: '', apellido: '', username: '', password: '', especialidad: 'Administración', telefono: '',
-        proyectoId: listaProyectos.length > 0 ? listaProyectos[0].id : ''
+        proyectoId: '' // <-- Lo dejamos vacío de nuevo
       });
 
-      // ==========================================
-      // ¡AQUÍ ESTÁ LA CORRECCIÓN!
-      // En lugar de hacer getUsuarios() sin filtrar,
-      // llamamos a la función maestra que ya tiene el filtro.
-      // ==========================================
       await cargarDatosIniciales();
       
     } catch (error) {
@@ -178,7 +172,7 @@ const handleSubmit = async (e) => {
           <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>
             Volver al Inicio
           </button>
-          <button type="submit" className="btn btn-primary" disabled={loading || listaProyectos.length === 0}>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? 'Guardando...' : '💾 Registrar Admin'}
           </button>
         </div>

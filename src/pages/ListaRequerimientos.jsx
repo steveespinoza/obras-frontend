@@ -75,7 +75,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
     setDetallesActuales(null);
   };
 
-  const isAdmin = usuarioActual?.isAdmin || false;
+  const isAdmin = usuarioActual?.role === 'Admin' || usuarioActual?.role === 'Jefe';
   const userName = usuarioActual?.name || "";
 
   let requerimientosVisibles = isAdmin

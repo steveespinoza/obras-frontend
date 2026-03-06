@@ -29,6 +29,7 @@ function MainApp() {
   const manejarLogout = () => {
     setUsuarioActual(null);
     localStorage.removeItem('usuarioObras');
+    sessionStorage.clear(); // <--- ¡AÑADE ESTA LÍNEA AQUÍ! Limpia el catálogo
     navigate('/');
   };
 
@@ -36,6 +37,7 @@ function MainApp() {
     const handleSessionExpired = () => {
       setUsuarioActual(null);
       localStorage.removeItem('usuarioObras');
+      sessionStorage.clear(); // <--- ¡AÑADE ESTA LÍNEA AQUÍ TAMBIÉN!
       navigate('/');
       alert("Tu sesión de seguridad ha expirado. Por favor, ingresa tus credenciales nuevamente.");
     };
@@ -63,8 +65,15 @@ function MainApp() {
             <div className="user-badge">
               <span className="avatar">{inicialUsuario}</span>
               <span className="user-name">{usuarioActual.name}</span>
-              <span className={`role-tag ${usuarioActual.isAdmin ? 'role-admin' : 'role-user'}`}>
-                {usuarioActual.isAdmin ? 'Admin' : 'Encargado'}
+              
+              {/* Comparamos el rol correctamente */}
+              <span className={`role-tag ${
+                usuarioActual.role === 'Admin' || usuarioActual.role === 'Jefe' 
+                  ? 'role-admin' 
+                  : 'role-user'
+              }`}>
+                {/* Mostramos el texto exacto según su rol */}
+                {usuarioActual.role === 'Jefe' ? 'Jefe' : usuarioActual.role === 'Admin' ? 'Admin' : 'Operario'}
               </span>
             </div>
           </div>
