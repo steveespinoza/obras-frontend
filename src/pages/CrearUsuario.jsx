@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 // ¡NUEVO!: Importamos getProyectos
-import { registerUser, getUsuarios, getProyectos } from '../services/api';
+import { registerUser, getUsuarios, getProyectos,updateUser } from '../services/api';
 import './CrearUsuario.css';
 import './VistasListado.css';
 
@@ -12,8 +13,10 @@ function CrearUsuario() {
   const [loading, setLoading] = useState(false);
   const { mostrarNotificacion } = useToast();
   
+  
   const [listaUsuarios, setListaUsuarios] = useState([]);
   const [cargandoUsuarios, setCargandoUsuarios] = useState(true);
+  const [editandoId, setEditandoId] = useState(null); // Guardará el ID del Admin a editar
   
   // ¡NUEVO!: Estado para los proyectos
   const [listaProyectos, setListaProyectos] = useState([]);
@@ -59,44 +62,69 @@ function CrearUsuario() {
     }
   };
 
+  const prepararEdicion = (user) => {
+    setFormData({
+      nombre: user.nombre || '',
+      apellido: user.apellido || '',
+      username: user.username || '',
+      password: '', // Siempre vacío por seguridad (así el backend sabe que no debe cambiarla si no escriben nada)
+      especialidad: user.especialidad || 'Administración',
+      telefono: user.telefono || '',
+      proyectoId: user.proyectoId || ''
+    });
+    setEditandoId(user.id);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Sube la pantalla al formulario
+  };
+
+  const cancelarEdicion = () => {
+    setFormData({
+      nombre: '', apellido: '', username: '', password: '', especialidad: 'Administración', telefono: '', proyectoId: ''
+    });
+    setEditandoId(null);
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // ELIMINAMOS la validación if (!formData.proyectoId) para permitir admins sin obra
-
     setLoading(true);
 
     try {
-      // ¡CORRECCIÓN AQUÍ!: Si hay un proyectoId, lo convertimos a Número. Si está vacío (""), enviamos null.
+      // MODO SEGURO: Si está vacío, mandamos explícitamente null, sino enviamos el Número.
+      const ID_Proyecto = (formData.proyectoId === "" || formData.proyectoId === null) 
+        ? null 
+        : Number(formData.proyectoId);
+
       const datosParaEnviar = { 
         ...formData, 
-        proyectoId: formData.proyectoId ? Number(formData.proyectoId) : null 
+        proyectoId: ID_Proyecto 
       };
       
-      await registerUser(datosParaEnviar);
+      if (editandoId) {
+        // MODO EDICIÓN
+        await updateUser(editandoId, datosParaEnviar);
+        mostrarNotificacion('¡Administrador actualizado y reasignado! 🔄', 'success');
+      } else {
+        // MODO CREACIÓN
+        await registerUser(datosParaEnviar);
+        mostrarNotificacion('¡Admin creado con éxito! 🏗️', 'success');
+      }
       
-      mostrarNotificacion('¡Admin creado con éxito! 🏗️', 'success');
-      
-      // Limpiamos el formulario dejándolo sin asignar
-      setFormData({
-        nombre: '', apellido: '', username: '', password: '', especialidad: 'Administración', telefono: '',
-        proyectoId: '' // <-- Lo dejamos vacío de nuevo
-      });
-
-      await cargarDatosIniciales();
+      cancelarEdicion(); // Limpia el formulario
+      await cargarDatosIniciales(); // Recarga la tabla
       
     } catch (error) {
-      mostrarNotificacion(error.message || 'Error al crear el admin', 'error');
+      mostrarNotificacion(error.message || 'Error al guardar los datos', 'error');
     } finally {
       setLoading(false);
     }
   };
 // Filtramos: Solo obras que NO tienen Admin asignado
-  const proyectosDisponibles = listaProyectos.filter(p => p.adminId === null);
+  const proyectosDisponibles = listaProyectos.filter(p => 
+    p.adminId === null || (editandoId && p.adminId === editandoId)
+  );
   return (
     <div className="card cu-container">
       <div className="list-header">
@@ -104,7 +132,7 @@ function CrearUsuario() {
       </div>
 
       <form onSubmit={handleSubmit} className="cu-form-section">
-        <h4 className="cu-section-title">Registrar Nuevo Admin</h4>
+        <h4 className="cu-section-title">{editandoId ? '✏️ Modificar Administrador' : 'Registrar Nuevo Admin'}</h4>
         
         <div className="cu-form-row">
           <div className="cu-form-group">
@@ -123,8 +151,15 @@ function CrearUsuario() {
             <input type="text" name="username" value={formData.username} onChange={handleChange} required placeholder="Ej. jperez" />
           </div>
           <div className="cu-form-group">
-            <label className="cu-label">Contraseña</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="*****" />
+            <label className="cu-label">Contraseña {editandoId && '(Opcional)'}</label>
+            <input 
+              type="password" 
+              name="password" 
+              value={formData.password} 
+              onChange={handleChange} 
+              required={!editandoId} // Solo es obligatorio si estamos creando
+              placeholder={editandoId ? "Deja vacío para mantener la actual" : "*****"} 
+            />
           </div>
         </div>
 
@@ -169,11 +204,13 @@ function CrearUsuario() {
         </div>
 
         <div className="cu-form-actions">
-          <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>
-            Volver al Inicio
-          </button>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Guardando...' : '💾 Registrar Admin'}
+          {editandoId && (
+            <button type="button" className="btn btn-secondary" onClick={cancelarEdicion} disabled={loading}>
+              ❌ Cancelar Edición
+            </button>
+          )}
+          <button type="submit" className={editandoId ? "btn btn-success" : "btn btn-primary"} disabled={loading}>
+            {loading ? 'Guardando...' : editandoId ? '💾 Guardar Cambios' : '💾 Registrar Admin'}
           </button>
         </div>
       </form>
@@ -193,16 +230,26 @@ function CrearUsuario() {
                   <th>Admin</th>
                   <th>Especialidad</th>
                   <th>Proyecto / Obra</th> 
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {listaUsuarios.map(user => (
-                  <tr key={user.id} className="cu-tbody-tr">
+                  <tr key={user.id} className="cu-tbody-tr" style={editandoId === user.id ? { backgroundColor: '#f0f9ff' } : {}}>
                     <td data-label="Nombre Completo"><strong>{user.nombreCompleto}</strong></td>
                     <td data-label="Usuario"><span className="cu-username-badge">{user.username}</span></td>
                     <td data-label="Especialidad">{user.especialidad}</td>
                     {/* Mostramos a qué proyecto pertenece */}
                     <td data-label="Proyecto">{user.proyectoNombre || `ID: ${user.proyectoId}`}</td>
+                    <td data-label="Acciones">
+                      <button 
+                        className="btn btn-outline-primary" 
+                        onClick={() => prepararEdicion(user)}
+                        style={{ padding: '4px 8px' }}
+                      >
+                        ✏️ Editar
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {listaUsuarios.length === 0 && (

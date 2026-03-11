@@ -3,8 +3,6 @@ import { useNavigate, Link, useParams } from 'react-router-dom';
 import { getAlmacen, createRequerimiento, getRequerimientoById, updateRequerimientoCompleto } from '../services/api';
 import useToast from '../hooks/useToast';
 import './FormularioRequerimiento.css'; 
-
-// IMPORTAMOS NUESTROS NUEVOS COMPONENTES HIJOS
 import RequerimientoForm from '../components/RequerimientoForm';
 import RequerimientoCart from '../components/RequerimientoCart';
 
@@ -12,22 +10,21 @@ function FormularioRequerimiento({ usuarioActual }) {
   const [almacen, setAlmacen] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams(); 
-
   const { mostrarNotificacion } = useToast(); 
   
   const [loading, setLoading] = useState(false);
   const [cargandoPedidoInicial, setCargandoPedidoInicial] = useState(false);
+
+  // 1. CLAVE DINÁMICA: Diferenciamos si es un borrador nuevo o una edición
+  const keyLocal = id ? `carritoEdit_${id}_${usuarioActual?.id}` : `carritoBorrador_${usuarioActual?.id}`;
   
+  // 2. INICIALIZAR CARRITO: Buscamos el borrador directamente
   const [carrito, setCarrito] = useState(() => {
-    // Si estamos editando un pedido (hay un ID en la URL), empezamos vacío 
-    if (id) return [];
-    
-    // 👇 Usamos una clave única con el ID del usuario
-    const keyLocal = `carritoBorrador_${usuarioActual.id}`;
+    // IMPORTANTE: Aquí ya NO debe estar la línea "if (id) return [];"
     const borrador = localStorage.getItem(keyLocal);
-    
     return borrador ? JSON.parse(borrador) : [];
   });
+
   const [editIndex, setEditIndex] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -38,33 +35,42 @@ function FormularioRequerimiento({ usuarioActual }) {
     unit: 'unidades'
   });
 
+  // 3. EFECTO: TRAER DATOS DE LA BASE DE DATOS
   useEffect(() => {
     getAlmacen().then(data => setAlmacen(data)).catch(err => console.error(err));
 
     if (id) {
-      setCargandoPedidoInicial(true);
-      getRequerimientoById(id)
-        .then(data => {
-          if (data.estado !== "Pendiente") {
-            alert("Solo se pueden editar pedidos Pendientes.");
-            navigate('/');
-            return;
-          }
-          setCarrito(data.detalles);
-        })
-        .catch(err => console.error("Error cargando pedido:", err))
-        .finally(() => setCargandoPedidoInicial(false));
+      const borrador = localStorage.getItem(keyLocal);
+      
+      // SOLO llamamos a la base de datos si NO hay un borrador guardado, 
+      // o si el borrador guardado es un array vacío "[]"
+      if (!borrador || JSON.parse(borrador).length === 0) {
+        setCargandoPedidoInicial(true);
+        getRequerimientoById(id)
+          .then(data => {
+            if (data.estado !== "Pendiente") {
+              alert("Solo se pueden editar pedidos Pendientes.");
+              navigate('/');
+              return;
+            }
+            setCarrito(data.detalles); // Esto llenará el carrito con la BD
+          })
+          .catch(err => console.error("Error cargando pedido:", err))
+          .finally(() => setCargandoPedidoInicial(false));
+      }
     }
-  }, [id, navigate]);
+  }, [id, navigate, keyLocal]);
 
-// Auto-guardar el carrito en localStorage (solo para pedidos nuevos)
+  // 4. EFECTO: AUTO-GUARDAR EL CARRITO EN LOCALSTORAGE
   useEffect(() => {
-    if (!id && usuarioActual?.id) {
-      // 👇 Guardamos en la clave única del usuario
-      const keyLocal = `carritoBorrador_${usuarioActual.id}`;
+    if (usuarioActual?.id) {
+      // Evitamos guardar un array vacío en localStorage justo al cargar la página de edición, 
+      // porque eso pisaría la lógica del efecto anterior.
+      if (id && carrito.length === 0) return;
+      
       localStorage.setItem(keyLocal, JSON.stringify(carrito));
     }
-  }, [carrito, id, usuarioActual]); // Añadimos usuarioActual a las dependencias
+  }, [carrito, id, keyLocal, usuarioActual]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -121,19 +127,23 @@ function FormularioRequerimiento({ usuarioActual }) {
     try {
       const datosParaEnviar = { trabajadorId: usuarioActual.id, detalles: carrito };
       if (id) {
+        // MODO EDICIÓN
         await updateRequerimientoCompleto(id, datosParaEnviar);
         mostrarNotificacion('¡Pedido actualizado con éxito! ✏️', 'success');
+        
+        // ¡NUEVO! Limpiamos el borrador de edición al terminar
+        localStorage.removeItem(keyLocal); 
       } else {
+        // MODO CREACIÓN
         await createRequerimiento(datosParaEnviar);
         mostrarNotificacion('¡Requerimiento creado con éxito! 🚀', 'success');
         
-        // 👇 Borramos el borrador local específico del usuario
-        const keyLocal = `carritoBorrador_${usuarioActual.id}`;
+        // Limpiamos el borrador nuevo
         localStorage.removeItem(keyLocal);
       }
       setTimeout(() => navigate('/'), 1500);
     } catch (error) {
-      mostrarNotificacion('Hubo un error al guardar el requerimiento.', 'error');
+      mostrarNotificacion(error.message || 'Hubo un error al guardar el requerimiento.', 'error');
       setLoading(false);
     }
   };
@@ -158,6 +168,7 @@ function FormularioRequerimiento({ usuarioActual }) {
         onChange={handleChange}
         onSubmit={procesarFormulario}
         onCancel={cancelarEdicion}
+        loading={loading}
       />
 
       {/* 2. USAMOS EL COMPONENTE DEL CARRITO */}
@@ -166,6 +177,7 @@ function FormularioRequerimiento({ usuarioActual }) {
         editIndex={editIndex}
         onEdit={editarDelCarrito}
         onRemove={quitarDelCarrito}
+        loading={loading}
       />
 
       <div className="req-submit-section">

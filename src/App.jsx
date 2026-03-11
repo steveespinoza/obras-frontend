@@ -1,16 +1,21 @@
 import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import ListaRequerimientos from './pages/ListaRequerimientos';
-import FormularioRequerimiento from './pages/FormularioRequerimiento';
-import Almacen from './pages/Almacen';
+import { useState, useEffect, lazy, Suspense } from 'react'; // <-- Añadimos lazy y Suspense
+
+// 1. IMPORTACIONES ESTÁTICAS (Lo que se necesita inmediatamente)
 import Login from './pages/Login';
-import Reportes from './pages/Reportes';
-import GestionProyectos from './pages/GestionProyectos';
-// 1. IMPORTAMOS LA NUEVA PANTALLA
-import UsuariosAdmin from './pages/UsuariosAdmin';
-import logoEmpresa from './assets/logoJ&M.jpeg'
-import CrearUsuario from './pages/CrearUsuario';
-import DetalleProyectoJefe from './pages/DetalleProyectoJefe';
+import logoEmpresa from './assets/logoJ&M.jpeg';
+
+// 2. IMPORTACIONES DINÁMICAS (Carga Perezosa)
+// Estos archivos JavaScript solo se descargarán cuando el usuario navegue hacia ellos
+const MisPedidos = lazy(() => import('./pages/misPedidos'));
+const PanelPedidosAdmin = lazy(() => import('./pages/PanelPedidosAdmin'));
+const FormularioRequerimiento = lazy(() => import('./pages/FormularioRequerimiento'));
+const Almacen = lazy(() => import('./pages/Almacen'));
+const Reportes = lazy(() => import('./pages/Reportes'));
+const GestionProyectos = lazy(() => import('./pages/GestionProyectos'));
+const UsuariosAdmin = lazy(() => import('./pages/UsuariosAdmin'));
+const CrearUsuario = lazy(() => import('./pages/CrearUsuario'));
+const DetalleProyectoJefe = lazy(() => import('./pages/DetalleProyectoJefe'));
 
 function MainApp() {
   const [usuarioActual, setUsuarioActual] = useState(() => {
@@ -119,51 +124,61 @@ function MainApp() {
           <button className="btn btn-outline-danger" onClick={manejarLogout}>Salir</button>
         </nav>
       </header>
-
       <main className="main-content">
-        <Routes>
-          {/* Ruta base: Si es Jefe, lo mandamos a sus Proyectos, si no, a los Pedidos */}
-          <Route path="/" element={
-            usuarioActual.role === 'Jefe' 
-              ? <GestionProyectos /> 
-              : <ListaRequerimientos usuarioActual={usuarioActual} />
-          } />
+        {/* El fallback es lo que se muestra mientras el navegador descarga la pantalla */}
+        <Suspense fallback={
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh', color: '#64748b' }}>
+            <h3>Cargando módulo... ⏳</h3>
+          </div>
+        }>
+          <Routes>
+            {/* Ruta base dividida inteligentemente por el rol */}
+            <Route path="/" element={
+              usuarioActual.role === 'Jefe' 
+                ? <GestionProyectos /> 
+                : usuarioActual.role === 'Admin'
+                  ? <PanelPedidosAdmin />
+                  : <MisPedidos />
+            } />
 
-          {/* Rutas de Trabajador Normal */}
-          {usuarioActual.role === 'User' && (
-            <>
-              <Route path="/nuevo" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
-              <Route path="/editar/:id" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
-            </>
-          )}
+            {/* Rutas de Trabajador Normal */}
+            {usuarioActual.role === 'User' && (
+              <>
+                <Route path="/nuevo" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
+                <Route path="/editar/:id" element={<FormularioRequerimiento usuarioActual={usuarioActual} />} />
+              </>
+            )}
 
-          {/* Rutas de Administrador */}
-          {usuarioActual.role === 'Admin' && (
-            <>
-              <Route path="/almacen" element={<Almacen />} />
-              <Route path="/reportes" element={<Reportes />} />
-            </>
-          )}
+            {/* Rutas de Administrador */}
+            {usuarioActual.role === 'Admin' && (
+              <>
+                <Route path="/almacen" element={<Almacen />} />
+                <Route path="/reportes" element={<Reportes />} />
+              </>
+            )}
 
-          {usuarioActual.role === 'Jefe' && (
-            <>
-              <Route path="/proyectos" element={<GestionProyectos />} />
-              <Route path="/proyectos/:id" element={<DetalleProyectoJefe />} />
-            </>
-          )}
+            {/* Rutas de Jefe */}
+            {usuarioActual.role === 'Jefe' && (
+              <>
+                <Route path="/proyectos" element={<GestionProyectos />} />
+                <Route path="/proyectos/:id" element={<DetalleProyectoJefe />} />
+              </>
+            )}
 
 {/* Ruta Inteligente de Usuarios */}
-          {(usuarioActual.role === 'Admin' || usuarioActual.role === 'Jefe') && (
-            <Route 
-              path="/usuarios/nuevo" 
-              element={
-                usuarioActual.role === 'Jefe' 
-                  ? <CrearUsuario /> 
-                  : <UsuariosAdmin />
-              } 
-            />
-          )}
-        </Routes>
+            {(usuarioActual.role === 'Admin' || usuarioActual.role === 'Jefe') && (
+              <Route 
+                path="/usuarios/nuevo" 
+                element={
+                  usuarioActual.role === 'Jefe' 
+                    ? <CrearUsuario /> 
+                    // ¡AQUÍ! Le pasamos el usuarioActual al componente
+                    : <UsuariosAdmin usuarioActual={usuarioActual} /> 
+                } 
+              />
+            )}
+          </Routes>
+        </Suspense>
       </main>
 
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-function RequerimientoCart({ carrito, editIndex, onEdit, onRemove }) {
+function RequerimientoCart({ carrito, editIndex, onEdit, onRemove,loading }) {
   return (
     <div className="req-cart-section">
       <h4 className="req-cart-header">
@@ -31,11 +31,21 @@ function RequerimientoCart({ carrito, editIndex, onEdit, onRemove }) {
               </div>
 
               <div className="req-item-actions">
-                <button type="button" className="btn-edit-item" onClick={() => onEdit(index)}>
+                <button 
+                  type="button" 
+                  className="btn-edit-item" 
+                  onClick={() => onEdit(index)}
+                  disabled={loading} // <--- Bloqueamos si está guardando
+                >
                   ✏️ Editar
                 </button>
 
-                <button type="button" className="btn-delete-item" onClick={() => onRemove(index)}>
+                <button 
+                  type="button" 
+                  className="btn-delete-item" 
+                  onClick={() => onRemove(index)}
+                  disabled={loading} // <--- Bloqueamos si está guardando
+                >
                   🗑️ Quitar
                 </button>
               </div>

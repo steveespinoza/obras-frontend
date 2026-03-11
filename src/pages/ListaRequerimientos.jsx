@@ -10,9 +10,12 @@ import './ListaRequerimientos.css';
 function ListaRequerimientos({ usuarioActual = {} }) {
   const [requerimientos, setRequerimientos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
   
   const [modalAbierto, setModalAbierto] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
+  const [eliminando, setEliminando] = useState(false);
 
   const [modalDetallesAbierto, setModalDetallesAbierto] = useState(false);
   const [detallesActuales, setDetallesActuales] = useState(null);
@@ -20,12 +23,17 @@ function ListaRequerimientos({ usuarioActual = {} }) {
 
   useEffect(() => {
     cargarDatos();
-  }, []);
+  }, [paginaActual]);
 
   const cargarDatos = async () => {
     try {
-      const data = await getRequerimientos();
-      setRequerimientos(Array.isArray(data) ? data : []);
+      // Le pasamos la página que queremos ver
+      const data = await getRequerimientos(paginaActual, 2); 
+      console.log("Respuesta del Backend:", data);
+      
+      // Ahora la lista viene dentro de "data.items"
+      setRequerimientos(Array.isArray(data.items) ? data.items : []);
+      setTotalPaginas(data.totalPaginas || 1);
     } catch (error) {
       console.error(error);
       setRequerimientos([]);
@@ -38,13 +46,27 @@ function ListaRequerimientos({ usuarioActual = {} }) {
   };
 
   const confirmarEliminacion = async () => {
+    // 1. Bloqueamos el botón de inmediato
+    setEliminando(true); 
+
     try {
       await deleteRequerimiento(idAEliminar);
-      await cargarDatos();
+      
       setModalAbierto(false);
       setIdAEliminar(null);
+
+      if (requerimientos.length === 1 && paginaActual > 1) {
+        setPaginaActual(paginaActual - 1);
+      } else {
+        await cargarDatos();
+      }
+
     } catch (error) {
       console.error("Error al eliminar", error);
+      // Aquí podrías agregar tu mostrarNotificacion('Error al eliminar', 'error') si quieres
+    } finally {
+      // 2. Liberamos el botón, sin importar si tuvo éxito o falló
+      setEliminando(false); 
     }
   };
 
@@ -135,6 +157,7 @@ function ListaRequerimientos({ usuarioActual = {} }) {
         onClose={() => setModalAbierto(false)} 
         onConfirm={confirmarEliminacion}
         mensaje="¿Estás seguro de que deseas eliminar este pedido? Se borrarán todos los materiales incluidos en él."
+        isLoading={eliminando} // <--- ¡AÑADE ESTA LÍNEA!
       />
 
       {/* Modal de Detalles */}
@@ -281,7 +304,32 @@ function ListaRequerimientos({ usuarioActual = {} }) {
           </tbody>
         </table>
       </div>
+      {/* CONTROLES DE PAGINACIÓN */}
+      {totalPaginas > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginTop: '20px' }}>
+          <button 
+            className="btn btn-secondary" 
+            disabled={paginaActual === 1} 
+            onClick={() => setPaginaActual(paginaActual - 1)}
+          >
+            ⬅ Anterior
+          </button>
+          
+          <span style={{ fontWeight: 'bold', color: '#475569' }}>
+            Página {paginaActual} de {totalPaginas}
+          </span>
+          
+          <button 
+            className="btn btn-primary" 
+            disabled={paginaActual === totalPaginas} 
+            onClick={() => setPaginaActual(paginaActual + 1)}
+          >
+            Siguiente ➡
+          </button>
+        </div>
+      )}
     </div>
+    
   );
 }
 

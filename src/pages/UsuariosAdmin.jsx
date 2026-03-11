@@ -5,7 +5,7 @@ import useToast from '../hooks/useToast';
 // ¡Magia! Importamos el MISMO CSS, así que el diseño será idéntico
 import './CrearUsuario.css'; 
 
-function UsuariosAdmin() {
+function UsuariosAdmin({ usuarioActual }) {
   const [listaUsuarios, setListaUsuarios] = useState([]);
   const [cargandoUsuarios, setCargandoUsuarios] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -20,6 +20,8 @@ function UsuariosAdmin() {
     especialidad: 'Construcción', 
     telefono: ''
   });
+  // Verificamos si tiene un proyecto asignado (que no sea null ni 0)
+  const tieneObraAsignada = usuarioActual?.proyectoId && usuarioActual.proyectoId > 0;
 
   useEffect(() => {
     cargarUsuarios();
@@ -66,6 +68,7 @@ function UsuariosAdmin() {
       </div>
 
       {/* FORMULARIO SIMPLIFICADO */}
+      {tieneObraAsignada ? (
       <form onSubmit={handleSubmit} className="cu-form-section">
         <h4 className="cu-section-title">Registrar Nuevo Trabajador</h4>
         
@@ -114,6 +117,14 @@ function UsuariosAdmin() {
           </button>
         </div>
       </form>
+      ) : (
+        <div className="cu-form-section" style={{ textAlign: 'center', padding: '40px 20px', backgroundColor: '#fffbeb', border: '1px solid #fde68a' }}>
+          <h3 style={{ color: '#d97706', marginBottom: '10px' }}>⚠️ No tienes una obra asignada</h3>
+          <p style={{ color: '#92400e' }}>
+            Actualmente no estás a cargo de ningún proyecto. Comunícate con la Gerencia para que te asignen una obra antes de comenzar a registrar a tu equipo de campo.
+          </p>
+        </div>
+      )}
 
       {/* TABLA DE SU EQUIPO */}
       <div className="cu-table-section">

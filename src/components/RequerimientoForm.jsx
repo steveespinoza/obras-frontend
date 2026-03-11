@@ -1,6 +1,6 @@
 import React from 'react';
 
-function RequerimientoForm({ formData, editIndex, almacen, onChange, onSubmit, onCancel }) {
+function RequerimientoForm({ formData, editIndex, almacen, onChange, onSubmit, onCancel,loading }) {
   return (
     <form onSubmit={onSubmit} className={`form-layout req-form-box ${editIndex !== null ? 'is-editing' : ''}`}>
       <h4 className={`req-form-title ${editIndex !== null ? 'is-editing' : ''}`}>
@@ -37,11 +37,11 @@ function RequerimientoForm({ formData, editIndex, almacen, onChange, onSubmit, o
       </div>
 
       <div className="req-form-actions">
-        <button type="submit" className={editIndex !== null ? "btn btn-primary" : "btn btn-success"}>
+        <button type="submit" className={editIndex !== null ? "btn btn-primary" : "btn btn-success"} disabled={loading}>
           {editIndex !== null ? '💾 Confirmar Cambio' : '+ Añadir a la lista'}
         </button>
         {editIndex !== null && (
-          <button type="button" className="btn btn-cancel" onClick={onCancel}>Cancelar</button>
+          <button type="button" className="btn btn-cancel" onClick={onCancel} disabled={loading}>Cancelar</button>
         )}
       </div>
     </form>

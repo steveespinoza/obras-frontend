@@ -43,8 +43,9 @@
   // 📦 REQUERIMIENTOS (Pedidos)
   // =========================
 
-  export const getRequerimientos = async () => {
-    const res = await fetch(`${API_URL}/requerimientos`, { headers: getAuthHeaders() });
+// Le agregamos los parámetros con valores por defecto
+  export const getRequerimientos = async (pagina = 1, cantidad = 50) => {
+    const res = await fetch(`${API_URL}/requerimientos?pagina=${pagina}&cantidad=${cantidad}`, { headers: getAuthHeaders() });
     return handleResponse(res);
   };
 

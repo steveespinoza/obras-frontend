@@ -1,7 +1,8 @@
 import React from 'react';
 
-function ConfirmModal({ isOpen, onClose, onConfirm, mensaje }) {
-  if (!isOpen) return null; // Si no está abierto, no renderiza nada
+// ¡NUEVO! Agregamos la propiedad isLoading
+function ConfirmModal({ isOpen, onClose, onConfirm, mensaje, isLoading }) {
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
@@ -9,13 +10,23 @@ function ConfirmModal({ isOpen, onClose, onConfirm, mensaje }) {
         <h3>⚠️ Confirmar Acción</h3>
         <p>{mensaje}</p>
         <div className="modal-actions">
-          {/* Botón para cancelar */}
-          <button className="btn" style={{ backgroundColor: '#e5e7eb', color: '#374151' }} onClick={onClose}>
+          {/* Bloqueamos el botón de cancelar si está cargando para que no se escape */}
+          <button 
+            className="btn" 
+            style={{ backgroundColor: '#e5e7eb', color: '#374151' }} 
+            onClick={onClose}
+            disabled={isLoading} 
+          >
             Cancelar
           </button>
-          {/* Botón para confirmar (Eliminar) */}
-          <button className="btn btn-danger" onClick={onConfirm}>
-            Sí, eliminar
+          
+          {/* Bloqueamos el botón de confirmar y cambiamos su texto */}
+          <button 
+            className="btn btn-danger" 
+            onClick={onConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Eliminando... ⏳' : 'Sí, eliminar'}
           </button>
         </div>
       </div>

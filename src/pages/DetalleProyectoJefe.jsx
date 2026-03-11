@@ -97,11 +97,24 @@ function DetalleProyectoJefe() {
     e.preventDefault();
     setGuardando(true);
     try {
-      await updateUser(proyecto.adminId, formData);
+      // ¡EL ARREGLO ESTÁ AQUÍ! 
+      // Le pasamos explícitamente el 'id' de la obra actual para que el backend no lo desasigne
+      const datosParaEnviar = {
+        ...formData,
+        proyectoId: Number(id) 
+      };
+
+      // Usamos datosParaEnviar en lugar de formData
+      await updateUser(proyecto.adminId, datosParaEnviar);
+      
       mostrarNotificacion('¡Datos del Administrador actualizados!', 'success');
       setModoActivo('vista');
       await cargarDetalle(); 
-    } catch (error) { mostrarNotificacion(error.message, 'error'); } finally { setGuardando(false); }
+    } catch (error) { 
+      mostrarNotificacion(error.message, 'error'); 
+    } finally { 
+      setGuardando(false); 
+    }
   };
 
   // --- RENDERIZADO ---
