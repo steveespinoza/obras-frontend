@@ -7,7 +7,7 @@ import logoEmpresa from './assets/logoJ&M.jpeg';
 
 // 2. IMPORTACIONES DINÁMICAS (Carga Perezosa)
 // Estos archivos JavaScript solo se descargarán cuando el usuario navegue hacia ellos
-const MisPedidos = lazy(() => import('./pages/misPedidos'));
+const MisPedidos = lazy(() => import('./pages/MisPedidos'));
 const PanelPedidosAdmin = lazy(() => import('./pages/PanelPedidosAdmin'));
 const FormularioRequerimiento = lazy(() => import('./pages/FormularioRequerimiento'));
 const Almacen = lazy(() => import('./pages/Almacen'));
